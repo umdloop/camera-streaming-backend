@@ -1,0 +1,392 @@
+asyncapi: '2.6.0'
+
+info:
+  title: Camera Streaming WebSocket API
+  version: '1.0.0'
+  description: >
+    WebSocket signaling and control API for the camera streaming backend.
+    The server listens on port 8081 using the `webrtc-protocol` WebSocket
+    subprotocol. All frames are JSON text.
+
+servers:
+  local:
+    url: 'ws://localhost:{port}'
+    protocol: ws
+    variables:
+      port:
+        default: '8081'
+
+channels:
+  /:
+    bindings:
+      ws:
+        method: GET
+        headers:
+          type: object
+          properties:
+            Sec-WebSocket-Protocol:
+              type: string
+              enum: [webrtc-protocol]
+
+    subscribe:
+      operationId: receiveFromServer
+      message:
+        oneOf:
+          - $ref: '#/components/messages/State'
+          - $ref: '#/components/messages/Offer'
+          - $ref: '#/components/messages/IceServer'
+          - $ref: '#/components/messages/Stats'
+
+    # "publish" = messages the CLIENT sends (client → server)
+    publish:
+      operationId: sendToServer
+      message:
+        oneOf:
+          - $ref: '#/components/messages/Enable'
+          - $ref: '#/components/messages/Disable'
+          - $ref: '#/components/messages/Rename'
+          - $ref: '#/components/messages/SetConfig'
+          - $ref: '#/components/messages/Answer'
+          - $ref: '#/components/messages/IceClient'
+
+components:
+
+  # ── Shared schemas ───────────────────────────────────────────────────────────
+
+  schemas:
+
+    CameraMode:
+      type: object
+      required: [format, width, height, maxFps]
+      properties:
+        format:
+          type: string
+          description: Pixel format reported by the OS (e.g. "MJPG", "YUYV", "NV12")
+        width:
+          type: integer
+        height:
+          type: integer
+        maxFps:
+          type: integer
+          description: Maximum framerate supported by the device in this mode
+
+    Camera:
+      type: object
+      required: [id, name, devicePath, enabled, format, width, height, fps, bitrate, exposure, capabilities]
+      properties:
+        id:
+          type: string
+          description: Unique identifier used in all control messages
+        name:
+          type: string
+          description: Human-readable label; falls back to id if unset
+        devicePath:
+          type: string
+          description: OS device path or index (e.g. "/dev/video0", "0")
+        enabled:
+          type: boolean
+          description: Whether the GStreamer pipeline is currently running
+        format:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        fps:
+          type: integer
+          description: FPS cap applied to the encoder
+        bitrate:
+          type: integer
+          description: Target encode bitrate in bits per second
+        exposure:
+          type: integer
+          description: Manual shutter/exposure value; -1 means auto
+        capabilities:
+          type: array
+          description: Capture modes advertised by the device; may be empty on some platforms
+          items:
+            $ref: '#/components/schemas/CameraMode'
+
+    ConfigPatch:
+      type: object
+      description: Partial config — only supplied fields are applied
+      properties:
+        format:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+        fps:
+          type: integer
+        bitrate:
+          type: integer
+        exposure:
+          type: integer
+          description: -1 for auto
+
+  # ── Messages ─────────────────────────────────────────────────────────────────
+
+  messages:
+
+    # ── Server → Client ────────────────────────────────────────────────────────
+
+    State:
+      name: state
+      title: Camera State
+      summary: >
+        Full camera list. Sent automatically on connect and after every
+        enable, disable, rename, or set_config is processed.
+      payload:
+        type: object
+        required: [type, cameras]
+        properties:
+          type:
+            type: string
+            const: state
+          cameras:
+            type: array
+            items:
+              $ref: '#/components/schemas/Camera'
+      examples:
+        - payload:
+            type: state
+            cameras:
+              - id: camera_0
+                name: Front
+                devicePath: /dev/video0
+                enabled: true
+                format: MJPG
+                width: 1280
+                height: 720
+                fps: 30
+                bitrate: 2000000
+                exposure: -1
+                capabilities:
+                  - format: MJPG
+                    width: 1280
+                    height: 720
+                    maxFps: 30
+
+    Offer:
+      name: offer
+      title: SDP Offer
+      summary: >
+        WebRTC SDP offer for a camera stream, sent once the GStreamer pipeline
+        is ready. The client must respond with an `answer` message.
+      payload:
+        type: object
+        required: [type, id, sdp]
+        properties:
+          type:
+            type: string
+            const: offer
+          id:
+            type: string
+            description: Camera id
+          sdp:
+            type: string
+            description: SDP offer body
+      examples:
+        - payload:
+            type: offer
+            id: camera_0
+            sdp: "v=0\r\no=- 0 0 IN IP4 127.0.0.1\r\n..."
+
+    IceServer:
+      name: ice
+      title: ICE Candidate (server → client)
+      summary: An ICE candidate generated by the server-side GStreamer pipeline.
+      payload:
+        type: object
+        required: [type, id, candidate, sdpMLineIndex]
+        properties:
+          type:
+            type: string
+            const: ice
+          id:
+            type: string
+            description: Camera id
+          candidate:
+            type: string
+          sdpMLineIndex:
+            type: integer
+      examples:
+        - payload:
+            type: ice
+            id: camera_0
+            candidate: "candidate:1 1 UDP 2013266431 192.168.1.5 5000 typ host"
+            sdpMLineIndex: 0
+
+    Stats:
+      name: stats
+      title: Pipeline Stats
+      summary: >
+        Periodic stats for one active camera, emitted every 500 ms per enabled
+        camera. fps and bitrate reflect the actual encoder output.
+      payload:
+        type: object
+        required: [type, camera_id, fps, bitrate]
+        properties:
+          type:
+            type: string
+            const: stats
+          camera_id:
+            type: string
+          fps:
+            type: number
+            description: Measured frames per second
+          bitrate:
+            type: number
+            description: Measured bitrate in bits per second
+      examples:
+        - payload:
+            type: stats
+            camera_id: camera_0
+            fps: 29.97
+            bitrate: 1987432
+
+    # ── Client → Server ────────────────────────────────────────────────────────
+
+    Enable:
+      name: enable
+      title: Enable Camera
+      summary: >
+        Start the GStreamer pipeline for a camera. The server responds with a
+        `state` message followed by an `offer` once the pipeline is ready.
+      payload:
+        type: object
+        required: [type, camera_id]
+        properties:
+          type:
+            type: string
+            const: enable
+          camera_id:
+            type: string
+      examples:
+        - payload:
+            type: enable
+            camera_id: camera_0
+
+    Disable:
+      name: disable
+      title: Disable Camera
+      summary: >
+        Stop the pipeline for a camera. The server responds with a `state`
+        message.
+      payload:
+        type: object
+        required: [type, camera_id]
+        properties:
+          type:
+            type: string
+            const: disable
+          camera_id:
+            type: string
+      examples:
+        - payload:
+            type: disable
+            camera_id: camera_0
+
+    Rename:
+      name: rename
+      title: Rename Camera
+      summary: >
+        Assign a new id/name to a camera. If the camera is active, the pipeline
+        is restarted under the new name. Changes are persisted. Server responds
+        with a `state`.
+      payload:
+        type: object
+        required: [type, camera_id, name]
+        properties:
+          type:
+            type: string
+            const: rename
+          camera_id:
+            type: string
+            description: Current camera id
+          name:
+            type: string
+            description: New name / id
+      examples:
+        - payload:
+            type: rename
+            camera_id: camera_0
+            name: Front
+
+    SetConfig:
+      name: set_config
+      title: Set Camera Config
+      summary: >
+        Apply a partial configuration patch to a camera. Only fields present in
+        `config` are updated. If the camera is active the pipeline is restarted.
+        Changes are persisted to cameras.json. Server responds with a `state`.
+      payload:
+        type: object
+        required: [type, camera_id, config]
+        properties:
+          type:
+            type: string
+            const: set_config
+          camera_id:
+            type: string
+          config:
+            $ref: '#/components/schemas/ConfigPatch'
+      examples:
+        - payload:
+            type: set_config
+            camera_id: camera_0
+            config:
+              fps: 15
+              bitrate: 1000000
+              exposure: -1
+
+    Answer:
+      name: answer
+      title: SDP Answer
+      summary: >
+        Client's WebRTC answer to a server `offer`. Completes the offer/answer
+        handshake and unblocks ICE negotiation.
+      payload:
+        type: object
+        required: [type, id, sdp]
+        properties:
+          type:
+            type: string
+            const: answer
+          id:
+            type: string
+            description: Camera id (must match the offer)
+          sdp:
+            type: string
+            description: SDP answer body
+      examples:
+        - payload:
+            type: answer
+            id: camera_0
+            sdp: "v=0\r\no=- 0 0 IN IP4 127.0.0.1\r\n..."
+
+    IceClient:
+      name: ice
+      title: ICE Candidate (client → server)
+      summary: An ICE candidate gathered by the browser's RTCPeerConnection.
+      payload:
+        type: object
+        required: [type, id, candidate, sdpMLineIndex]
+        properties:
+          type:
+            type: string
+            const: ice
+          id:
+            type: string
+            description: Camera id
+          candidate:
+            type: string
+          sdpMLineIndex:
+            type: integer
+      examples:
+        - payload:
+            type: ice
+            id: camera_0
+            candidate: "candidate:1 1 UDP 2013266431 192.168.1.10 49152 typ host"
+            sdpMLineIndex: 0

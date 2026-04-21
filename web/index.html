@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Camera Streams</title>
+</head>
+<body>
+  <p id="status">Connecting...</p>
+  <div id="cameras"></div>
+
+  <script>
+    const WS_URL = 'ws://localhost:8081';
+
+    const pcs = new Map();
+
+    let ws;
+
+    function send(msg) {
+      ws?.send(JSON.stringify(msg));
+    }
+
+    function connect() {
+      ws = new WebSocket(WS_URL, 'webrtc-protocol');
+
+      ws.onopen = () => {
+        document.getElementById('status').textContent = 'Connected';
+      };
+
+      ws.onclose = () => {
+        document.getElementById('status').textContent = 'Disconnected — reconnecting...';
+        setTimeout(connect, 2000);
+      };
+
+      ws.onmessage = (e) => handleMessage(JSON.parse(e.data));
+    }
+
+    // ── Message handler ────────────────────────────────────────────────────────
+
+    function handleMessage(msg) {
+      switch (msg.type) {
+
+        case 'state':
+          renderCameras(msg.cameras);
+          break;
+
+        case 'stats':
+          updateStats(msg.camera_id, msg.fps, msg.bitrate);
+          break;
+
+        case 'offer': {
+          const { id, sdp } = msg;
+
+          pcs.get(id)?.close();
+
+          const pc = new RTCPeerConnection({ iceServers: [] });
+          pcs.set(id, pc);
+
+          pc.ontrack = (e) => {
+            const video = document.getElementById(`video-${id}`);
+            if (video) video.srcObject = e.streams[0] ?? new MediaStream([e.track]);
+          };
+
+          pc.onicecandidate = (e) => {
+            if (!e.candidate) return;
+            send({
+              type: 'ice',
+              id,
+              candidate: e.candidate.candidate,
+              sdpMLineIndex: e.candidate.sdpMLineIndex,
+            });
+          };
+
+          pc.setRemoteDescription({ type: 'offer', sdp })
+            .then(() => pc.createAnswer())
+            .then((answer) => {
+              pc.setLocalDescription(answer);
+              send({ type: 'answer', id, sdp: answer.sdp });
+            })
+            .catch((err) => console.error('WebRTC offer handling failed:', err));
+          break;
+        }
+
+        case 'ice': {
+          pcs.get(msg.id)
+            ?.addIceCandidate({ candidate: msg.candidate, sdpMLineIndex: msg.sdpMLineIndex })
+            .catch(() => {});
+          break;
+        }
+      }
+    }
+
+
+    function enableCamera(id)  { send({ type: 'enable',  camera_id: id }); }
+
+    function disableCamera(id) {
+      send({ type: 'disable', camera_id: id });
+      pcs.get(id)?.close();
+      pcs.delete(id);
+      const video = document.getElementById(`video-${id}`);
+      if (video) video.srcObject = null;
+    }
+
+    function renameCamera(id, name) { send({ type: 'rename', camera_id: id, name }); }
+
+    function setConfig(id, config)  { send({ type: 'set_config', camera_id: id, config }); }
+
+
+    function renderCameras(cameras) {
+      const container = document.getElementById('cameras');
+      container.innerHTML = '';
+
+      if (cameras.length === 0) {
+        container.textContent = 'No cameras detected.';
+        return;
+      }
+
+      for (const cam of cameras) {
+        container.appendChild(makeCameraCard(cam));
+      }
+    }
+
+    function makeCameraCard(cam) {
+      const id   = cam.id;
+      const caps = cam.capabilities ?? [];
+
+      const card = document.createElement('div');
+      card.id = `card-${id}`;
+
+      const video = document.createElement('video');
+      video.id        = `video-${id}`;
+      video.autoplay  = true;
+      video.playsInline = true;
+      video.muted     = true;
+      video.style.width = '480px';
+      video.style.display = 'block';
+      card.appendChild(video);
+
+      const info = document.createElement('p');
+      info.textContent = `${cam.name || id}  [${cam.devicePath}]  ${cam.enabled ? 'live' : 'offline'}`;
+      card.appendChild(info);
+
+      const statsEl = document.createElement('span');
+      statsEl.id = `stats-${id}`;
+      if (cam.enabled && cam.stats) {
+        statsEl.textContent = `${cam.stats.fps.toFixed(1)} fps  ${(cam.stats.bitrate / 1e6).toFixed(1)} Mbps`;
+      }
+      card.appendChild(statsEl);
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.textContent = cam.enabled ? 'Disable' : 'Enable';
+      toggleBtn.onclick = () => cam.enabled ? disableCamera(id) : enableCamera(id);
+      card.appendChild(toggleBtn);
+
+      // ── Rename ─────────────────────────────────────────────────────────────
+      const nameInput = document.createElement('input');
+      nameInput.placeholder = 'New name';
+      const renameBtn = document.createElement('button');
+      renameBtn.textContent = 'Rename';
+      renameBtn.onclick = () => {
+        if (nameInput.value.trim()) renameCamera(id, nameInput.value.trim());
+        nameInput.value = '';
+      };
+      card.appendChild(nameInput);
+      card.appendChild(renameBtn);
+
+      const modeSelect = document.createElement('select');
+      for (const m of caps) {
+        const opt = document.createElement('option');
+        opt.value       = JSON.stringify(m);
+        opt.textContent = `${m.width}×${m.height} ${m.format}`;
+        if (m.format === cam.format && m.width === cam.width && m.height === cam.height)
+          opt.selected = true;
+        modeSelect.appendChild(opt);
+      }
+
+      const fpsInput = document.createElement('input');
+      fpsInput.type  = 'number';
+      fpsInput.value = cam.fps;
+      fpsInput.min   = 1;
+      fpsInput.placeholder = 'FPS cap';
+
+      const bitrateInput = document.createElement('input');
+      bitrateInput.type  = 'number';
+      bitrateInput.value = cam.bitrate;
+      bitrateInput.step  = 100000;
+      bitrateInput.placeholder = 'Bitrate (bps)';
+
+      const exposureAuto = document.createElement('input');
+      exposureAuto.type    = 'checkbox';
+      exposureAuto.checked = cam.exposure < 0;
+
+      const exposureVal = document.createElement('input');
+      exposureVal.type  = 'number';
+      exposureVal.value = cam.exposure < 0 ? 250 : cam.exposure;
+      exposureVal.min   = 1;
+      exposureVal.placeholder = 'Exposure';
+
+      const applyBtn = document.createElement('button');
+      applyBtn.textContent = 'Apply config';
+      applyBtn.onclick = () => {
+        const config = {
+          fps:      Number(fpsInput.value),
+          bitrate:  Number(bitrateInput.value),
+          exposure: exposureAuto.checked ? -1 : Number(exposureVal.value),
+        };
+        if (caps.length > 0) {
+          const mode = JSON.parse(modeSelect.value);
+          config.format = mode.format;
+          config.width  = mode.width;
+          config.height = mode.height;
+        }
+        setConfig(id, config);
+      };
+
+      const autoLabel = document.createElement('label');
+      autoLabel.textContent = ' auto exposure';
+      autoLabel.prepend(exposureAuto);
+
+      if (caps.length > 0) card.appendChild(modeSelect);
+      card.appendChild(fpsInput);
+      card.appendChild(bitrateInput);
+      card.appendChild(autoLabel);
+      card.appendChild(exposureVal);
+      card.appendChild(applyBtn);
+
+      card.appendChild(document.createElement('hr'));
+      return card;
+    }
+
+    function updateStats(cameraId, fps, bitrate) {
+      const el = document.getElementById(`stats-${cameraId}`);
+      if (el) el.textContent = `${fps.toFixed(1)} fps  ${(bitrate / 1e6).toFixed(1)} Mbps`;
+    }
+
+    connect();
+  </script>
+</body>
+</html>
