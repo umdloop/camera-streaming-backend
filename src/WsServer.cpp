@@ -70,8 +70,13 @@ int WsServer::onWsCallback(lws* wsi, lws_callback_reasons reason, void* in, size
             break;
 
         case LWS_CALLBACK_RECEIVE:
-            if (onMessage_ && in)
-                onMessage_(std::string(static_cast<char*>(in), len));
+            if (in) {
+                receiveBuffer_.append(static_cast<char*>(in), len);
+                if (lws_is_final_fragment(wsi)) {
+                    if (onMessage_) onMessage_(receiveBuffer_);
+                    receiveBuffer_.clear();
+                }
+            }
             break;
 
         case LWS_CALLBACK_EVENT_WAIT_CANCELLED:

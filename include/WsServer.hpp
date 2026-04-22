@@ -31,6 +31,7 @@ private:
     std::atomic<bool> running_{true};
     MessageCallback onMessage_;
     ConnectCallback onConnect_;
+    std::string     receiveBuffer_;
 
     std::mutex             queueMutex_;
     std::queue<std::string> messageQueue_;

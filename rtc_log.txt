@@ -1,0 +1,644 @@
+{
+ "getUserMedia": [],
+ "PeerConnections": {
+  "105-1": {
+   "pid": 13183,
+   "rtcConfiguration": "{}",
+   "stats": {
+    "CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40-base64Certificate": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "certificate",
+     "values": "[\"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\"]"
+    },
+    "CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40-fingerprint": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "certificate",
+     "values": "[\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\"]"
+    },
+    "CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40-fingerprintAlgorithm": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "certificate",
+     "values": "[\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\",\"sha-256\"]"
+    },
+    "CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "certificate",
+     "values": "[\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\",\"certificate\"]"
+    },
+    "CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "certificate",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "CPYadRusXd_zDYTvIkA-bytesDiscardedOnSend": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-bytesReceived": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-bytesSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[13167,13167,13167,13167,13167,13167,13167,13167,13167,13167,14630,14630,14630,14630,14630,14630,14630,14630]"
+    },
+    "CPYadRusXd_zDYTvIkA-consentRequestsSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[9,9,10,10,10,11,11,11,12,12,13,13,13,14,14,14,15,15]"
+    },
+    "CPYadRusXd_zDYTvIkA-currentRoundTripTime": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001]"
+    },
+    "CPYadRusXd_zDYTvIkA-lastPacketSentTimestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[1776824190588,1776824190588,1776824190588,1776824190588,1776824190588,1776824190588,1776824190588,1776824190588,1776824190588,1776824190588,1776824203401,1776824203401,1776824203401,1776824203401,1776824203401,1776824203401,1776824203401,1776824203401]"
+    },
+    "CPYadRusXd_zDYTvIkA-localCandidateId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\",\"IYadRusXd\"]"
+    },
+    "CPYadRusXd_zDYTvIkA-nominated": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]"
+    },
+    "CPYadRusXd_zDYTvIkA-packetsDiscardedOnSend": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-packetsReceived": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-packetsSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[18,18,18,18,18,18,18,18,18,18,20,20,20,20,20,20,20,20]"
+    },
+    "CPYadRusXd_zDYTvIkA-priority": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000,8655919583250628000]"
+    },
+    "CPYadRusXd_zDYTvIkA-remoteCandidateId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\",\"IzDYTvIkA\"]"
+    },
+    "CPYadRusXd_zDYTvIkA-requestsReceived": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-requestsSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[10,10,11,11,11,12,12,12,13,13,14,14,14,15,15,15,16,16]"
+    },
+    "CPYadRusXd_zDYTvIkA-responsesReceived": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[10,10,11,11,11,12,12,12,13,13,14,14,14,15,15,15,16,16]"
+    },
+    "CPYadRusXd_zDYTvIkA-responsesSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-state": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\",\"succeeded\"]"
+    },
+    "CPYadRusXd_zDYTvIkA-totalRoundTripTime": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0.006,0.006,0.007,0.007,0.007,0.008,0.008,0.008,0.008,0.008,0.009,0.009,0.009,0.01,0.01,0.01,0.011,0.011]"
+    },
+    "CPYadRusXd_zDYTvIkA-transportId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\"]"
+    },
+    "CPYadRusXd_zDYTvIkA-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\",\"candidate-pair\"]"
+    },
+    "CPYadRusXd_zDYTvIkA-writable": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]"
+    },
+    "CPYadRusXd_zDYTvIkA-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "IH8O6UJ0v-address": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]"
+    },
+    "IH8O6UJ0v-candidateType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\"]"
+    },
+    "IH8O6UJ0v-foundation": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290,2750929290]"
+    },
+    "IH8O6UJ0v-ip": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]"
+    },
+    "IH8O6UJ0v-isRemote": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]"
+    },
+    "IH8O6UJ0v-networkAdapterType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\"]"
+    },
+    "IH8O6UJ0v-networkType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\"]"
+    },
+    "IH8O6UJ0v-port": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534,37534]"
+    },
+    "IH8O6UJ0v-priority": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727,2113929727]"
+    },
+    "IH8O6UJ0v-protocol": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\"]"
+    },
+    "IH8O6UJ0v-transportId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\"]"
+    },
+    "IH8O6UJ0v-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\"]"
+    },
+    "IH8O6UJ0v-usernameFragment": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\"]"
+    },
+    "IH8O6UJ0v-vpn": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]"
+    },
+    "IH8O6UJ0v-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "IYadRusXd-address": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]"
+    },
+    "IYadRusXd-candidateType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\"]"
+    },
+    "IYadRusXd-foundation": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564,805647564]"
+    },
+    "IYadRusXd-ip": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]"
+    },
+    "IYadRusXd-isRemote": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]"
+    },
+    "IYadRusXd-networkAdapterType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\",\"any\"]"
+    },
+    "IYadRusXd-networkType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\",\"unknown\"]"
+    },
+    "IYadRusXd-port": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617,38617]"
+    },
+    "IYadRusXd-priority": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151,2113937151]"
+    },
+    "IYadRusXd-protocol": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\"]"
+    },
+    "IYadRusXd-transportId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\"]"
+    },
+    "IYadRusXd-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\",\"local-candidate\"]"
+    },
+    "IYadRusXd-usernameFragment": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\"]"
+    },
+    "IYadRusXd-vpn": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]"
+    },
+    "IYadRusXd-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "local-candidate",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "IzDYTvIkA-address": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\"]"
+    },
+    "IzDYTvIkA-candidateType": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\",\"host\"]"
+    },
+    "IzDYTvIkA-foundation": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]"
+    },
+    "IzDYTvIkA-ip": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\",\"10.174.233.252\"]"
+    },
+    "IzDYTvIkA-isRemote": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]"
+    },
+    "IzDYTvIkA-port": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844,45844]"
+    },
+    "IzDYTvIkA-priority": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327,2015363327]"
+    },
+    "IzDYTvIkA-protocol": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\",\"udp\"]"
+    },
+    "IzDYTvIkA-transportId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\",\"Tvideo01\"]"
+    },
+    "IzDYTvIkA-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\",\"remote-candidate\"]"
+    },
+    "IzDYTvIkA-usernameFragment": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\",\"EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\"]"
+    },
+    "IzDYTvIkA-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "remote-candidate",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "P-dataChannelsClosed": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "peer-connection",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "P-dataChannelsOpened": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "peer-connection",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "P-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "peer-connection",
+     "values": "[\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\",\"peer-connection\"]"
+    },
+    "P-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "peer-connection",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "Tvideo01-bytesReceived": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "Tvideo01-bytesSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[13167,13167,13167,13167,13167,13167,13167,13167,13167,13167,14630,14630,14630,14630,14630,14630,14630,14630]"
+    },
+    "Tvideo01-dtlsRole": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\",\"client\"]"
+    },
+    "Tvideo01-dtlsState": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\",\"connecting\"]"
+    },
+    "Tvideo01-iceLocalUsernameFragment": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\",\"vdr0\"]"
+    },
+    "Tvideo01-iceRole": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\",\"controlled\"]"
+    },
+    "Tvideo01-iceState": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\",\"connected\"]"
+    },
+    "Tvideo01-localCertificateId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\",\"CF28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\"]"
+    },
+    "Tvideo01-packetsReceived": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "Tvideo01-packetsSent": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[18,18,18,18,18,18,18,18,18,18,20,20,20,20,20,20,20,20]"
+    },
+    "Tvideo01-selectedCandidatePairChanges": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]"
+    },
+    "Tvideo01-selectedCandidatePairId": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\",\"CPYadRusXd_zDYTvIkA\"]"
+    },
+    "Tvideo01-type": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\",\"transport\"]"
+    },
+    "Tvideo01-timestamp": {
+     "startTime": "2026-04-22T02:16:34.209Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[1776824194209.17,1776824195203.726,1776824196204.528,1776824197204.24,1776824198203.937,1776824199204.044,1776824200203.937,1776824201203.416,1776824202204.187,1776824203203.93,1776824204203.745,1776824205203.604,1776824206203.729,1776824207204.094,1776824208204.03,1776824209204.331,1776824210204.549,1776824211204.468]"
+    },
+    "CPYadRusXd_zDYTvIkA-[bytesSent_in_bits/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,11706.163468199567,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-[bytesReceived_in_bits/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-[packetsSent/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,2.000369697231642,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-[packetsReceived/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "Tvideo01-[bytesSent_in_bits/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[0,0,0,0,0,0,0,0,0,11706.163468199567,0,0,0,0,0,0,0]"
+    },
+    "Tvideo01-[bytesReceived_in_bits/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "Tvideo01-[packetsSent/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[0,0,0,0,0,0,0,0,0,2.000369697231642,0,0,0,0,0,0,0]"
+    },
+    "Tvideo01-[packetsReceived/s]": {
+     "startTime": "2026-04-22T02:16:35.203Z",
+     "endTime": "2026-04-22T02:16:51.204Z",
+     "statsType": "transport",
+     "values": "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]"
+    },
+    "CPYadRusXd_zDYTvIkA-[totalRoundTripTime/responsesReceived]": {
+     "startTime": "2026-04-22T02:16:36.204Z",
+     "endTime": "2026-04-22T02:16:50.204Z",
+     "statsType": "candidate-pair",
+     "values": "[0.001,0.001,0,0.0009999999999999992,0.0010000000000000009,0.0009999999999999992]"
+    }
+   },
+   "updateLog": [
+    {
+     "timestamp": 1776824194204.201,
+     "time": "4/21/2026, 10:16:34 PM",
+     "type": "setRemoteDescription",
+     "value": "{\"type\":\"offer\",\"sdp\":\"v=0\\r\\no=- 3767260313668237858 0 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=video 45844 UDP/TLS/RTP/SAVPF 96\\r\\nc=IN IP4 10.174.233.252\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=candidate:1 1 udp 2015363327 10.174.233.252 45844 typ host generation 0\\r\\na=candidate:2 1 tcp 1015021823 10.174.233.252 9 typ host tcptype active generation 0\\r\\na=candidate:3 1 tcp 1010827519 10.174.233.252 56879 typ host tcptype passive generation 0\\r\\na=candidate:4 1 udp 2015363583 fe80::6fa1:9cf7:a081:3af3 39114 typ host generation 0\\r\\na=candidate:5 1 tcp 1015022079 fe80::6fa1:9cf7:a081:3af3 9 typ host tcptype active generation 0\\r\\na=candidate:6 1 tcp 1010827775 fe80::6fa1:9cf7:a081:3af3 42687 typ host tcptype passive generation 0\\r\\na=ice-ufrag:EEWasSl1s/Z98jbIavVoKdwStynxR7Z7\\r\\na=ice-pwd:GkHefiVeVk+HYulBRhnJxiyWkLpw8su4\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 FD:22:0B:67:C6:7B:14:26:40:E1:B1:D3:2A:7E:8D:60:0D:3B:3A:81:5C:DA:40:C0:86:51:D5:08:A6:20:13:94\\r\\na=setup:actpass\\r\\na=mid:video0\\r\\na=sendrecv\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:96 H264/90000\\r\\na=rtcp-fb:96 nack pli\\r\\na=rtcp-fb:96 transport-cc\\r\\na=fmtp:96 packetization-mode=0\\r\\n\"}"
+    },
+    {
+     "timestamp": 1776824194204.217,
+     "time": "4/21/2026, 10:16:34 PM",
+     "type": "setLocalDescription",
+     "value": "{\"type\":\"answer\",\"sdp\":\"v=0\\r\\no=- 1162578819126168796 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\na=msid-semantic: WMS\\r\\nm=video 9 UDP/TLS/RTP/SAVPF 96\\r\\nc=IN IP4 0.0.0.0\\r\\na=rtcp:9 IN IP4 0.0.0.0\\r\\na=candidate:805647564 1 udp 2113937151 134de708-8a05-4b94-9da9-5644a703df03.local 38617 typ host generation 0 network-cost 999\\r\\na=ice-ufrag:vdr0\\r\\na=ice-pwd:DYh5NEBKS5mSIz9i9TAHRJJl\\r\\na=ice-options:trickle\\r\\na=fingerprint:sha-256 28:D9:B8:80:22:FB:8A:0D:4D:BD:A4:C4:C1:E0:4C:AA:F8:61:B4:55:5E:49:B5:CC:95:1D:6F:4B:09:AE:0B:40\\r\\na=setup:active\\r\\na=mid:video0\\r\\na=recvonly\\r\\na=rtcp-mux\\r\\na=rtcp-rsize\\r\\na=rtpmap:96 H264/90000\\r\\na=rtcp-fb:96 transport-cc\\r\\na=rtcp-fb:96 nack pli\\r\\na=fmtp:96 level-asymmetry-allowed=1;packetization-mode=0;profile-level-id=42e01f\\r\\n\"}"
+    },
+    {
+     "timestamp": 1776824194204.264,
+     "time": "4/21/2026, 10:16:34 PM",
+     "type": "signalingstatechange",
+     "value": "\"stable\""
+    },
+    {
+     "timestamp": 1776824194204.279,
+     "time": "4/21/2026, 10:16:34 PM",
+     "type": "iceconnectionstatechange",
+     "value": "\"connected\""
+    },
+    {
+     "timestamp": 1776824194204.285,
+     "time": "4/21/2026, 10:16:34 PM",
+     "type": "connectionstatechange",
+     "value": "\"connecting\""
+    }
+   ],
+   "url": "http://0.0.0.0:8080/"
+  }
+ },
+ "UserAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+ "UserAgentData": [
+  {
+   "brand": "Chromium",
+   "version": "142.0.7444.134"
+  },
+  {
+   "brand": "Google Chrome",
+   "version": "142.0.7444.134"
+  },
+  {
+   "brand": "Not_A Brand",
+   "version": "99.0.0.0"
+  }
+ ]
+}
+
+
+

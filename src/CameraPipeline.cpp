@@ -60,18 +60,50 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
            " ! videoconvert" +
            " ! " + specs.converter +
            " ! " + enc +
+           " ! h264parse" +
            " ! video/x-h264,profile=baseline,stream-format=byte-stream,alignment=au"
            " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
-           " ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1"
+           " ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=1"
            " ! webrtcbin name=webrtcbin bundle-policy=max-bundle";
 }
 
-// ── Offer creation helpers ────────────────────────────────────────────────────
+// ── Negotiation Helpers ───────────────────────────────────────────────────────
 
-struct NegotiationCtx {
-    GstElement*      webrtcbin;
-    CameraPipeline*  pipeline;
+struct SdpCtx {
+    GstElement* webrtcbin;
+    std::string sdp;
 };
+
+struct IceCtx {
+    GstElement* webrtcbin;
+    std::string candidate;
+    int mline;
+};
+
+static gboolean doSetRemoteAnswer(gpointer data) {
+    auto* ctx = static_cast<SdpCtx*>(data);
+    GstSDPMessage* sdpMsg = nullptr;
+    gst_sdp_message_new(&sdpMsg);
+    if (gst_sdp_message_parse_buffer(reinterpret_cast<const guint8*>(ctx->sdp.c_str()), ctx->sdp.size(), sdpMsg) == GST_SDP_OK) {
+        GstWebRTCSessionDescription* answer =
+            gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER, sdpMsg);
+        GstPromise* promise = gst_promise_new();
+        g_signal_emit_by_name(ctx->webrtcbin, "set-remote-description", answer, promise);
+        gst_promise_unref(promise);
+        gst_webrtc_session_description_free(answer);
+    } else {
+        gst_sdp_message_free(sdpMsg);
+    }
+    delete ctx;
+    return G_SOURCE_REMOVE;
+}
+
+static gboolean doAddIceCandidate(gpointer data) {
+    auto* ctx = static_cast<IceCtx*>(data);
+    g_signal_emit_by_name(ctx->webrtcbin, "add-ice-candidate", ctx->mline, ctx->candidate.c_str());
+    delete ctx;
+    return G_SOURCE_REMOVE;
+}
 
 static gboolean doCreateOffer(gpointer data) {
     auto* ctx = static_cast<NegotiationCtx*>(data);
@@ -183,20 +215,12 @@ void CameraPipeline::stop() {
 
 void CameraPipeline::setRemoteAnswer(const std::string& sdp) {
     if (!webrtcbin_) return;
-    GstSDPMessage* sdpMsg = nullptr;
-    gst_sdp_message_new(&sdpMsg);
-    gst_sdp_message_parse_buffer(reinterpret_cast<const guint8*>(sdp.c_str()), sdp.size(), sdpMsg);
-    GstWebRTCSessionDescription* answer =
-        gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER, sdpMsg);
-    GstPromise* promise = gst_promise_new();
-    g_signal_emit_by_name(webrtcbin_, "set-remote-description", answer, promise);
-    gst_promise_unref(promise);
-    gst_webrtc_session_description_free(answer);
+    g_main_context_invoke(nullptr, doSetRemoteAnswer, new SdpCtx{webrtcbin_, sdp});
 }
 
 void CameraPipeline::addIceCandidate(const std::string& candidate, int sdpMLineIndex) {
     if (!webrtcbin_) return;
-    g_signal_emit_by_name(webrtcbin_, "add-ice-candidate", sdpMLineIndex, candidate.c_str());
+    g_main_context_invoke(nullptr, doAddIceCandidate, new IceCtx{webrtcbin_, candidate, sdpMLineIndex});
 }
 
 PipelineStats CameraPipeline::getStats() {
