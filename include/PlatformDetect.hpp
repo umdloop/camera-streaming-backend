@@ -14,7 +14,7 @@ class PlatformDetect {
 public:
     static PlatformSpecifics getPlatformSpecifics() {
         PlatformSpecifics specs;
-        
+
         specs.source = "v4l2src";
         specs.encoder = "x264enc";
         specs.converter = "videoconvert";
@@ -38,6 +38,13 @@ public:
         if (factory) {
             specs.encoder = "nvv4l2h264enc";
             specs.converter = "nvvidconv";
+            gst_object_unref(factory);
+            return specs;
+        }
+
+        factory = gst_element_factory_find("vp8enc");
+        if (factory) {
+            specs.encoder = "vp8enc";
             gst_object_unref(factory);
         }
 

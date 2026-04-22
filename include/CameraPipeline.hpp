@@ -27,6 +27,8 @@ public:
 
     void setRemoteAnswer(const std::string& sdp);
     void addIceCandidate(const std::string& candidate, int sdpMLineIndex);
+    void applyRemoteAnswerNow(const std::string& sdp);
+    void addIceCandidateNow(const std::string& candidate, int sdpMLineIndex);
 
     void setOnIceCandidateCallback(OnIceCandidateCallback cb) { onIceCandidate_ = cb; }
     void setOnOfferCreatedCallback(OnOfferCreatedCallback cb) { onOfferCreated_ = cb; }
@@ -39,6 +41,7 @@ private:
     CameraConfig config_;
     GstElement* pipeline_  = nullptr;
     GstElement* webrtcbin_ = nullptr;
+    guint       busWatchId_ = 0;
 
     std::atomic<int>       frameCount_{0};
     std::atomic<long long> byteCount_{0};
@@ -49,6 +52,7 @@ private:
     OnOfferCreatedCallback onOfferCreated_;
 
     static GstPadProbeReturn statsProbe(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
+    static gboolean onBusMessage(GstBus* bus, GstMessage* message, gpointer user_data);
     static void onNegotiationNeeded(GstElement* webrtcbin, gpointer user_data);
     static void onIceCandidate(GstElement* webrtcbin, guint mlineindex, gchar* candidate, gpointer user_data);
 };

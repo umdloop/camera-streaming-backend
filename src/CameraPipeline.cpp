@@ -1,6 +1,9 @@
 #include "CameraPipeline.hpp"
 #include "PlatformDetect.hpp"
+#include <algorithm>
 #include <chrono>
+#include <cctype>
+#include <cstdlib>
 #include <gst/sdp/gstsdpmessage.h>
 #include <iostream>
 #include <sys/time.h>
@@ -14,8 +17,36 @@ static std::string timestamp() {
     return std::string(buf) + "." + std::to_string(tv.tv_usec / 1000);
 }
 
+static bool isDigitsOnly(const std::string& value) {
+    return !value.empty() &&
+           std::all_of(value.begin(), value.end(), [](unsigned char ch) {
+               return std::isdigit(ch) != 0;
+           });
+}
+
+static std::string normalizeLinuxDevicePath(const std::string& devicePath, const std::string& source) {
+    if (source == "v4l2src" && isDigitsOnly(devicePath)) {
+        return "/dev/video" + devicePath;
+    }
+    return devicePath;
+}
+
+static std::string toLower(std::string value) {
+    std::transform(value.begin(), value.end(), value.begin(), [](unsigned char ch) {
+        return static_cast<char>(std::tolower(ch));
+    });
+    return value;
+}
+
+static std::string getCodecOverride() {
+    const char* raw = std::getenv("CAMERA_STREAM_CODEC");
+    return raw ? toLower(raw) : "";
+}
+
 static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSpecifics& specs) {
     const bool isMjpg = (cfg.format == "MJPG");
+    const std::string devicePath = normalizeLinuxDevicePath(cfg.devicePath, specs.source);
+    const bool useVp8 = (specs.encoder == "vp8enc");
 
     std::string src;
 
@@ -24,7 +55,7 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
               " ! video/x-raw,width=640,height=480,framerate=30/1"
               " ! timeoverlay";
     } else if (specs.source == "v4l2src") {
-        src = "v4l2src name=src device=" + cfg.devicePath + " !";
+        src = "v4l2src name=src do-timestamp=true device=" + devicePath + " !";
         if (isMjpg) {
             src += " image/jpeg"
                    ",width="  + std::to_string(cfg.width) +
@@ -38,31 +69,55 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
         if (isMjpg) src += " ! jpegdec";
         src += " ! videorate ! video/x-raw,framerate=" + std::to_string(cfg.fps) + "/1";
     } else {
-        src = "avfvideosrc name=src device-index=" + cfg.devicePath +
+        src = "avfvideosrc name=src device-index=" + devicePath +
               " ! video/x-raw"
               ",width="     + std::to_string(cfg.width) +
               ",height="    + std::to_string(cfg.height) +
               ",framerate=" + std::to_string(cfg.fps) + "/1";
     }
 
+    const std::string realtimeQueue = "queue max-size-buffers=8 max-size-bytes=0 max-size-time=0";
+    const std::string networkQueue  = "queue max-size-buffers=8 max-size-bytes=0 max-size-time=0";
+
     std::string enc = specs.encoder;
-    if (specs.encoder == "vtenc_h264") {
+    std::string payload;
+
+    if (useVp8) {
+        enc += " deadline=1 target-bitrate=" + std::to_string(cfg.bitrate) +
+               " keyframe-max-dist=10 error-resilient=partitions";
+        payload =
+            " ! rtpvp8pay name=pay0 picture-id-mode=15-bit pt=96"
+            " ! application/x-rtp,media=video,encoding-name=VP8,clock-rate=90000,payload=96";
+    } else if (specs.encoder == "vtenc_h264") {
         enc += " realtime=true bitrate=" + std::to_string(cfg.bitrate / 1000);
+        payload =
+            " ! video/x-h264,profile=baseline,stream-format=byte-stream,alignment=au"
+            " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
+            " ! application/x-rtp,media=video,encoding-name=H264,clock-rate=90000,payload=96,packetization-mode=(string)1";
     } else if (specs.encoder == "nvv4l2h264enc") {
         // NVIDIA encoder expects bits/sec
         enc += " insert-sps-pps=true idrinterval=30 bitrate=" + std::to_string(cfg.bitrate);
+        payload =
+            " ! video/x-h264,profile=baseline,stream-format=byte-stream,alignment=au"
+            " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
+            " ! application/x-rtp,media=video,encoding-name=H264,clock-rate=90000,payload=96,packetization-mode=(string)1";
     } else {
         // x264enc expects kbits/sec
-        enc += " tune=zerolatency bitrate=" + std::to_string(cfg.bitrate / 1000) + " speed-preset=ultrafast key-int-max=30";
+        enc += " tune=zerolatency bitrate=" + std::to_string(cfg.bitrate / 1000) + " speed-preset=ultrafast key-int-max=10";
+        payload =
+            " ! video/x-h264,profile=baseline,stream-format=byte-stream,alignment=au"
+            " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
+            " ! application/x-rtp,media=video,encoding-name=H264,clock-rate=90000,payload=96,packetization-mode=(string)1";
     }
 
     return src +
+           " ! " + realtimeQueue +
            " ! videoconvert" +
-           " ! " + specs.converter +
-           " ! " + enc +
-           " ! video/x-h264,profile=baseline,stream-format=byte-stream,alignment=au"
-           " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
-           " ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1"
+           (specs.converter == "videoconvert" ? "" : " ! " + specs.converter) +
+           " ! " + realtimeQueue +
+           " ! " + enc + " name=enc" +
+           " ! " + networkQueue +
+           payload +
            " ! webrtcbin name=webrtcbin bundle-policy=max-bundle";
 }
 
@@ -73,11 +128,54 @@ struct NegotiationCtx {
     CameraPipeline*  pipeline;
 };
 
+struct RemoteAnswerCtx {
+    CameraPipeline* pipeline;
+    std::string sdp;
+};
+
+struct IceCandidateCtx {
+    CameraPipeline* pipeline;
+    std::string candidate;
+    int sdpMLineIndex;
+};
+
 static gboolean doCreateOffer(gpointer data) {
     auto* ctx = static_cast<NegotiationCtx*>(data);
     std::cout << "[" << timestamp() << "] Creating offer on main loop" << std::endl;
     GstPromise* promise = gst_promise_new_with_change_func(CameraPipeline::onOfferCreated, ctx->pipeline, nullptr);
     g_signal_emit_by_name(ctx->webrtcbin, "create-offer", nullptr, promise);
+    delete ctx;
+    return G_SOURCE_REMOVE;
+}
+
+static gboolean doSetRemoteAnswer(gpointer data) {
+    auto* ctx = static_cast<RemoteAnswerCtx*>(data);
+    CameraPipeline* self = ctx->pipeline;
+
+    if (!self) {
+        delete ctx;
+        return G_SOURCE_REMOVE;
+    }
+
+    std::cout << "[" << timestamp() << "] Applying remote answer on main loop" << std::endl;
+    self->applyRemoteAnswerNow(ctx->sdp);
+
+    delete ctx;
+    return G_SOURCE_REMOVE;
+}
+
+static gboolean doAddIceCandidate(gpointer data) {
+    auto* ctx = static_cast<IceCandidateCtx*>(data);
+    CameraPipeline* self = ctx->pipeline;
+
+    if (!self) {
+        delete ctx;
+        return G_SOURCE_REMOVE;
+    }
+
+    std::cout << "[" << timestamp() << "] Adding remote ICE candidate on main loop" << std::endl;
+    self->addIceCandidateNow(ctx->candidate, ctx->sdpMLineIndex);
+
     delete ctx;
     return G_SOURCE_REMOVE;
 }
@@ -94,6 +192,15 @@ bool CameraPipeline::start() {
     if (pipeline_) return true;
 
     auto specs = PlatformDetect::getPlatformSpecifics();
+    const std::string codecOverride = getCodecOverride();
+    if (codecOverride == "vp8") {
+        specs.encoder = "vp8enc";
+        specs.converter = "videoconvert";
+        std::cout << "[" << timestamp() << "] Codec override: vp8" << std::endl;
+    } else if (codecOverride == "h264") {
+        if (specs.encoder == "vp8enc") specs.encoder = "x264enc";
+        std::cout << "[" << timestamp() << "] Codec override: h264" << std::endl;
+    }
     if (config_.devicePath == "test") specs.source = "videotestsrc";
 
     std::string pipelineStr = buildPipelineString(config_, specs);
@@ -117,16 +224,23 @@ bool CameraPipeline::start() {
     g_signal_connect(webrtcbin_, "on-negotiation-needed", G_CALLBACK(onNegotiationNeeded), this);
     g_signal_connect(webrtcbin_, "on-ice-candidate",      G_CALLBACK(onIceCandidate),      this);
 
+    GstBus* bus = gst_element_get_bus(pipeline_);
+    if (bus) {
+        busWatchId_ = gst_bus_add_watch(bus, onBusMessage, this);
+        gst_object_unref(bus);
+    }
+
     GstElement* pay = gst_bin_get_by_name(GST_BIN(pipeline_), "pay0");
     if (pay) {
-        GstPad* pad = gst_element_get_static_pad(pay, "src");
-        if (pad) {
+        GstPad* srcPad = gst_element_get_static_pad(pay, "src");
+        if (srcPad) {
             frameCount_.store(0);
             byteCount_.store(0);
             lastStatsMs_.store(std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::steady_clock::now().time_since_epoch()).count());
-            gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER, statsProbe, this, nullptr);
-            gst_object_unref(pad);
+            gst_pad_add_probe(srcPad, static_cast<GstPadProbeType>(GST_PAD_PROBE_TYPE_BUFFER | GST_PAD_PROBE_TYPE_BUFFER_LIST),
+                              statsProbe, this, nullptr);
+            gst_object_unref(srcPad);
         }
         gst_object_unref(pay);
     }
@@ -168,6 +282,10 @@ bool CameraPipeline::start() {
 
 void CameraPipeline::stop() {
     offerScheduled_.store(false);
+    if (busWatchId_ != 0) {
+        g_source_remove(busWatchId_);
+        busWatchId_ = 0;
+    }
     if (webrtcbin_) {
         gst_element_set_state(webrtcbin_, GST_STATE_NULL);
         gst_object_unref(webrtcbin_);
@@ -183,6 +301,19 @@ void CameraPipeline::stop() {
 
 void CameraPipeline::setRemoteAnswer(const std::string& sdp) {
     if (!webrtcbin_) return;
+    std::cout << "[" << timestamp() << "] Received remote answer" << std::endl;
+    g_idle_add(doSetRemoteAnswer, new RemoteAnswerCtx{this, sdp});
+}
+
+void CameraPipeline::addIceCandidate(const std::string& candidate, int sdpMLineIndex) {
+    if (!webrtcbin_) return;
+    std::cout << "[" << timestamp() << "] Received remote ICE candidate" << std::endl;
+    g_idle_add(doAddIceCandidate, new IceCandidateCtx{this, candidate, sdpMLineIndex});
+}
+
+void CameraPipeline::applyRemoteAnswerNow(const std::string& sdp) {
+    if (!webrtcbin_) return;
+
     GstSDPMessage* sdpMsg = nullptr;
     gst_sdp_message_new(&sdpMsg);
     gst_sdp_message_parse_buffer(reinterpret_cast<const guint8*>(sdp.c_str()), sdp.size(), sdpMsg);
@@ -194,7 +325,7 @@ void CameraPipeline::setRemoteAnswer(const std::string& sdp) {
     gst_webrtc_session_description_free(answer);
 }
 
-void CameraPipeline::addIceCandidate(const std::string& candidate, int sdpMLineIndex) {
+void CameraPipeline::addIceCandidateNow(const std::string& candidate, int sdpMLineIndex) {
     if (!webrtcbin_) return;
     g_signal_emit_by_name(webrtcbin_, "add-ice-candidate", sdpMLineIndex, candidate.c_str());
 }
@@ -216,12 +347,83 @@ PipelineStats CameraPipeline::getStats() {
 
 GstPadProbeReturn CameraPipeline::statsProbe(GstPad*, GstPadProbeInfo* info, gpointer user_data) {
     auto* self = static_cast<CameraPipeline*>(user_data);
-    if (GstBuffer* buf = GST_PAD_PROBE_INFO_BUFFER(info)) {
-        self->frameCount_.fetch_add(1, std::memory_order_relaxed);
-        self->byteCount_.fetch_add(static_cast<long long>(gst_buffer_get_size(buf)),
-                                   std::memory_order_relaxed);
+    int units = 0;
+    long long bytes = 0;
+
+    if ((GST_PAD_PROBE_INFO_TYPE(info) & GST_PAD_PROBE_TYPE_BUFFER_LIST) != 0) {
+        if (GstBufferList* list = gst_pad_probe_info_get_buffer_list(info)) {
+            units = static_cast<int>(gst_buffer_list_length(list));
+            const guint len = gst_buffer_list_length(list);
+            for (guint i = 0; i < len; ++i) {
+                GstBuffer* buf = gst_buffer_list_get(list, i);
+                if (GST_IS_BUFFER(buf)) bytes += static_cast<long long>(gst_buffer_get_size(buf));
+            }
+        }
+    } else if ((GST_PAD_PROBE_INFO_TYPE(info) & GST_PAD_PROBE_TYPE_BUFFER) != 0) {
+        GstBuffer* buf = GST_PAD_PROBE_INFO_BUFFER(info);
+        if (GST_IS_BUFFER(buf)) {
+            units = 1;
+            bytes = static_cast<long long>(gst_buffer_get_size(buf));
+        }
+    }
+
+    if (units > 0) {
+        self->frameCount_.fetch_add(units, std::memory_order_relaxed);
+        self->byteCount_.fetch_add(bytes, std::memory_order_relaxed);
     }
     return GST_PAD_PROBE_OK;
+}
+
+gboolean CameraPipeline::onBusMessage(GstBus*, GstMessage* message, gpointer) {
+    switch (GST_MESSAGE_TYPE(message)) {
+        case GST_MESSAGE_ERROR: {
+            GError* error = nullptr;
+            gchar* debug = nullptr;
+            gst_message_parse_error(message, &error, &debug);
+            std::cerr << "[" << timestamp() << "] GST error from "
+                      << GST_OBJECT_NAME(message->src) << ": "
+                      << (error ? error->message : "unknown") << std::endl;
+            if (debug && *debug) {
+                std::cerr << "[" << timestamp() << "] GST error debug: " << debug << std::endl;
+            }
+            if (error) g_error_free(error);
+            g_free(debug);
+            break;
+        }
+        case GST_MESSAGE_WARNING: {
+            GError* error = nullptr;
+            gchar* debug = nullptr;
+            gst_message_parse_warning(message, &error, &debug);
+            std::cerr << "[" << timestamp() << "] GST warning from "
+                      << GST_OBJECT_NAME(message->src) << ": "
+                      << (error ? error->message : "unknown") << std::endl;
+            if (debug && *debug) {
+                std::cerr << "[" << timestamp() << "] GST warning debug: " << debug << std::endl;
+            }
+            if (error) g_error_free(error);
+            g_free(debug);
+            break;
+        }
+        case GST_MESSAGE_STATE_CHANGED: {
+            if (GST_IS_ELEMENT(message->src)) {
+                GstState oldState;
+                GstState newState;
+                GstState pendingState;
+                gst_message_parse_state_changed(message, &oldState, &newState, &pendingState);
+                const char* name = GST_OBJECT_NAME(message->src);
+                if (g_strcmp0(name, "webrtcbin") == 0 || g_strcmp0(name, "pay0") == 0) {
+                    std::cout << "[" << timestamp() << "] GST state changed " << name
+                              << ": " << gst_element_state_get_name(oldState)
+                              << " -> " << gst_element_state_get_name(newState)
+                              << std::endl;
+                }
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    return G_SOURCE_CONTINUE;
 }
 
 void CameraPipeline::onNegotiationNeeded(GstElement* webrtcbin, gpointer user_data) {

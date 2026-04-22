@@ -57,7 +57,10 @@
 
           pc.ontrack = (e) => {
             const video = document.getElementById(`video-${id}`);
-            if (video) video.srcObject = e.streams[0] ?? new MediaStream([e.track]);
+            if (video) {
+              video.srcObject = e.streams[0] ?? new MediaStream([e.track]);
+              video.play().catch((err) => console.error(`video play failed for ${id}:`, err));
+            }
           };
 
           pc.onicecandidate = (e) => {
@@ -70,13 +73,16 @@
             });
           };
 
-          pc.setRemoteDescription({ type: 'offer', sdp })
-            .then(() => pc.createAnswer())
-            .then((answer) => {
-              pc.setLocalDescription(answer);
-              send({ type: 'answer', id, sdp: answer.sdp });
-            })
-            .catch((err) => console.error('WebRTC offer handling failed:', err));
+          (async () => {
+            try {
+              await pc.setRemoteDescription({ type: 'offer', sdp });
+              const answer = await pc.createAnswer();
+              await pc.setLocalDescription(answer);
+              send({ type: 'answer', id, sdp: pc.localDescription?.sdp ?? answer.sdp });
+            } catch (err) {
+              console.error('WebRTC offer handling failed:', err);
+            }
+          })();
           break;
         }
 
@@ -131,6 +137,14 @@
       video.autoplay  = true;
       video.playsInline = true;
       video.muted     = true;
+      video.onloadedmetadata = () => console.log(`video ${id} loadedmetadata`, {
+        width: video.videoWidth,
+        height: video.videoHeight,
+        readyState: video.readyState,
+      });
+      video.onplaying = () => console.log(`video ${id} playing`);
+      video.onpause = () => console.log(`video ${id} paused`);
+      video.onerror = () => console.error(`video ${id} error`, video.error);
       video.style.width = '480px';
       video.style.display = 'block';
       card.appendChild(video);

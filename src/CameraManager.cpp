@@ -176,12 +176,23 @@ void CameraManager::discoverCameras() {
         if (devicePath.empty()) {
             GstElement* elem = gst_device_create_element(device, nullptr);
             if (elem) {
-                gint devIdx = -1;
-                g_object_get(elem, "device-index", &devIdx, nullptr);
-                devicePath = std::to_string(devIdx >= 0 ? devIdx : idx);
+                if (g_object_class_find_property(G_OBJECT_GET_CLASS(elem), "device")) {
+                    gchar* devPath = nullptr;
+                    g_object_get(elem, "device", &devPath, nullptr);
+                    if (devPath) {
+                        devicePath = devPath;
+                        g_free(devPath);
+                    }
+                }
+                if (devicePath.empty() && g_object_class_find_property(G_OBJECT_GET_CLASS(elem), "device-index")) {
+                    gint devIdx = -1;
+                    g_object_get(elem, "device-index", &devIdx, nullptr);
+                    if (devIdx >= 0) devicePath = std::to_string(devIdx);
+                }
                 gst_element_set_state(elem, GST_STATE_NULL);
                 gst_object_unref(elem);
-            } else {
+            }
+            if (devicePath.empty()) {
                 devicePath = std::to_string(idx);
             }
         }
