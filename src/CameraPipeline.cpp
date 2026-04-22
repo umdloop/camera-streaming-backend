@@ -69,6 +69,11 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
 
 // ── Negotiation Helpers ───────────────────────────────────────────────────────
 
+struct NegotiationCtx {
+    GstElement*     webrtcbin;
+    CameraPipeline* pipeline;
+};
+
 struct SdpCtx {
     GstElement* webrtcbin;
     std::string sdp;
