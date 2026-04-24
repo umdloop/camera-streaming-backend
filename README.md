@@ -39,7 +39,7 @@ cmake --build build
 ./build/camera-stream [--ws-port <port>]
 ```
 
-Serve the web client from the repo root and open `http://localhost:8000/web/`:
+If the camera backend is running on the Jetson at `192.168.88.90`, the web GUI can be served from another machine such as `192.168.88.10` and will connect back to the Jetson over WebSocket:
 
 ```bash
 python3 -m http.server 8000

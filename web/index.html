@@ -9,7 +9,9 @@
   <div id="cameras"></div>
 
   <script>
-    const WS_URL = 'ws://localhost:8081';
+    const CAMERA_BACKEND_HOST = '192.168.88.90';
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const WS_URL = `${wsProtocol}//${CAMERA_BACKEND_HOST}:8081`;
 
     const pcs = new Map();
 

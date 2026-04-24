@@ -10,7 +10,7 @@ info:
 
 servers:
   local:
-    url: 'ws://localhost:{port}'
+    url: 'ws://192.168.88.90:{port}'
     protocol: ws
     variables:
       port:
