@@ -14,6 +14,7 @@ static std::string timestamp() {
     return std::string(buf) + "." + std::to_string(tv.tv_usec / 1000);
 }
 
+
 static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSpecifics& specs) {
     const bool isMjpg = (cfg.format == "MJPG");
 
@@ -38,29 +39,33 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
         if (isMjpg) src += " ! jpegdec";
         src += " ! videorate ! video/x-raw,framerate=" + std::to_string(cfg.fps) + "/1";
     } else {
+        // Request native resolution from the source, then enforce the fps cap
+        // with videorate — avfvideosrc ignores framerate hints it can't satisfy.
         src = "avfvideosrc name=src device-index=" + cfg.devicePath +
               " ! video/x-raw"
-              ",width="     + std::to_string(cfg.width) +
-              ",height="    + std::to_string(cfg.height) +
-              ",framerate=" + std::to_string(cfg.fps) + "/1";
+              ",width="  + std::to_string(cfg.width) +
+              ",height=" + std::to_string(cfg.height) +
+              " ! videorate"
+              " ! video/x-raw,framerate=" + std::to_string(cfg.fps) + "/1";
     }
 
+    const int bitrate = cfg.computeBitrate();
     std::string enc = specs.encoder;
     if (specs.encoder == "vtenc_h264") {
-        enc += " realtime=true bitrate=" + std::to_string(cfg.bitrate / 1000);
+        enc += " realtime=true bitrate=" + std::to_string(bitrate / 1000);
     } else if (specs.encoder == "nvv4l2h264enc") {
-        // NVIDIA encoder expects bits/sec
-        enc += " insert-sps-pps=true idrinterval=30 bitrate=" + std::to_string(cfg.bitrate);
+        enc += " insert-sps-pps=true idrinterval=30 bitrate=" + std::to_string(bitrate);
     } else {
         // x264enc expects kbits/sec
-        enc += " tune=zerolatency bitrate=" + std::to_string(cfg.bitrate / 1000) + " speed-preset=ultrafast key-int-max=30";
+        enc += " tune=zerolatency bitrate=" + std::to_string(bitrate / 1000) + " speed-preset=ultrafast key-int-max=30";
     }
 
     return src +
            " ! videoconvert" +
            " ! " + specs.converter +
            " ! " + enc +
-           " ! video/x-h264,profile=baseline,stream-format=byte-stream,alignment=au"
+           " ! h264parse name=parse"
+           " ! video/x-h264,stream-format=byte-stream,alignment=au"
            " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
            " ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1"
            " ! webrtcbin name=webrtcbin bundle-policy=max-bundle";
@@ -84,7 +89,8 @@ static gboolean doCreateOffer(gpointer data) {
 
 // ── CameraPipeline ────────────────────────────────────────────────────────────
 
-CameraPipeline::CameraPipeline(const CameraConfig& config) : config_(config) {}
+CameraPipeline::CameraPipeline(const CameraConfig& config, std::string stunServer)
+    : config_(config), stunServer_(std::move(stunServer)) {}
 
 CameraPipeline::~CameraPipeline() {
     stop();
@@ -114,12 +120,16 @@ bool CameraPipeline::start() {
         return false;
     }
 
+    if (!stunServer_.empty())
+        g_object_set(webrtcbin_, "stun-server", stunServer_.c_str(), nullptr);
+
     g_signal_connect(webrtcbin_, "on-negotiation-needed", G_CALLBACK(onNegotiationNeeded), this);
     g_signal_connect(webrtcbin_, "on-ice-candidate",      G_CALLBACK(onIceCandidate),      this);
 
-    GstElement* pay = gst_bin_get_by_name(GST_BIN(pipeline_), "pay0");
-    if (pay) {
-        GstPad* pad = gst_element_get_static_pad(pay, "src");
+    // Probe h264parse src (alignment=au): one buffer per video frame, accurate FPS + bitrate.
+    GstElement* parse = gst_bin_get_by_name(GST_BIN(pipeline_), "parse");
+    if (parse) {
+        GstPad* pad = gst_element_get_static_pad(parse, "src");
         if (pad) {
             frameCount_.store(0);
             byteCount_.store(0);
@@ -128,7 +138,7 @@ bool CameraPipeline::start() {
             gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER, statsProbe, this, nullptr);
             gst_object_unref(pad);
         }
-        gst_object_unref(pay);
+        gst_object_unref(parse);
     }
 
     if (config_.exposure >= 0) {

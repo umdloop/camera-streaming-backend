@@ -19,7 +19,7 @@ public:
     using OnIceCandidateCallback = std::function<void(const std::string& candidate, int sdpMLineIndex)>;
     using OnOfferCreatedCallback = std::function<void(const std::string& sdp)>;
 
-    CameraPipeline(const CameraConfig& config);
+    CameraPipeline(const CameraConfig& config, std::string stunServer = {});
     ~CameraPipeline();
 
     bool start();
@@ -37,6 +37,7 @@ public:
 
 private:
     CameraConfig config_;
+    std::string  stunServer_;
     GstElement* pipeline_  = nullptr;
     GstElement* webrtcbin_ = nullptr;
 

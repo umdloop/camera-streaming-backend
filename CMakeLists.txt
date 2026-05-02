@@ -18,6 +18,7 @@ set(SOURCES
     src/main.cpp
     src/CameraManager.cpp
     src/CameraPipeline.cpp
+    src/MissionManager.cpp
     src/WsServer.cpp
 )
 

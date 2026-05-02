@@ -3,8 +3,40 @@
 #include <fstream>
 #include <gst/gst.h>
 #include <iostream>
+#ifdef __linux__
+#  include <climits>
+#  include <cstdlib>
+#  include <sstream>
+#endif
 
 using json = nlohmann::json;
+
+// Returns a stable USB topology string (e.g. "usb:1-1.2") for a v4l2 device
+// by resolving its sysfs symlink and extracting the USB port path.
+// Returns "" on non-Linux platforms or if the device is not on a USB bus.
+static std::string resolveUsbPath(const std::string& devPath) {
+#ifdef __linux__
+    auto slash = devPath.rfind('/');
+    std::string base = (slash == std::string::npos) ? devPath : devPath.substr(slash + 1);
+
+    std::string sysLink = "/sys/class/video4linux/" + base;
+    char resolved[PATH_MAX];
+    if (!realpath(sysLink.c_str(), resolved)) return "";
+
+    // Sysfs path looks like:
+    //   .../usb1/1-1/1-1.2/1-1.2:1.0/video4linux/video0
+    // The USB interface component contains ':' and starts with digits (e.g. "1-1.2:1.0").
+    // Strip the interface suffix to get the device path ("1-1.2").
+    std::istringstream ss(std::string(resolved));
+    std::string component;
+    while (std::getline(ss, component, '/')) {
+        auto colon = component.find(':');
+        if (colon != std::string::npos && std::isdigit(static_cast<unsigned char>(component[0])))
+            return "usb:" + component.substr(0, colon);
+    }
+#endif
+    return "";
+}
 
 static int extractMaxFps(const GValue* v) {
     if (GST_VALUE_HOLDS_FRACTION(v)) {
@@ -74,11 +106,21 @@ static std::vector<CameraMode> parseCaps(GstCaps* caps) {
         }
     }
 
+    // If the camera has any MJPEG modes, drop all raw formats — prefer MJPEG.
+    // If it has no MJPEG modes (e.g. macOS AVF), keep all raw modes so it still works.
+    bool hasMjpeg = std::any_of(modes.begin(), modes.end(),
+                                [](const CameraMode& m) { return m.format == "MJPG"; });
+    if (hasMjpeg) {
+        modes.erase(std::remove_if(modes.begin(), modes.end(),
+                                   [](const CameraMode& m) { return m.format != "MJPG"; }),
+                    modes.end());
+    }
+
+    // ascending by pixel count so modes[0] is the lowest resolution
     std::sort(modes.begin(), modes.end(), [](const CameraMode& a, const CameraMode& b) {
         int pa = a.width * a.height, pb = b.width * b.height;
-        if (pa != pb) return pa > pb;
-        if (a.format != b.format) return a.format < b.format;
-        return a.maxFps > b.maxFps;
+        if (pa != pb) return pa < pb;
+        return a.maxFps > b.maxFps; // higher fps first within same resolution
     });
 
     return modes;
@@ -94,12 +136,14 @@ void CameraManager::loadConfigs(const std::string& path) {
         for (auto& [id, obj] : j["cameras"].items()) {
             CameraConfig cfg;
             cfg.devicePath = obj["devicePath"];
+            cfg.usbPath    = obj.value("usbPath",  "");
             cfg.name       = obj.value("name",     "");
+            cfg.role       = obj.value("role",     "");
             cfg.format     = obj.value("format",   "");
             cfg.width      = obj.value("width",    1280);
             cfg.height     = obj.value("height",   720);
             cfg.fps        = obj.value("fps",      30);
-            cfg.bitrate    = obj.value("bitrate",  2000000);
+            cfg.quality    = obj.value("quality",  "medium");
             cfg.exposure   = obj.value("exposure", -1);
             configs_[id]   = cfg;
         }
@@ -113,12 +157,14 @@ void CameraManager::saveConfigs(const std::string& path) const {
     for (const auto& [id, cfg] : configs_) {
         cameras[id] = {
             {"devicePath", cfg.devicePath},
+            {"usbPath",    cfg.usbPath},
             {"name",       cfg.name},
+            {"role",       cfg.role},
             {"format",     cfg.format},
             {"width",      cfg.width},
             {"height",     cfg.height},
             {"fps",        cfg.fps},
-            {"bitrate",    cfg.bitrate},
+            {"quality",    cfg.quality},
             {"exposure",   cfg.exposure},
         };
     }
@@ -129,10 +175,18 @@ void CameraManager::saveConfigs(const std::string& path) const {
 void CameraManager::discoverCameras() {
     int nextId = 0;
 
-    auto pathExists = [&](const std::string& p) {
-        for (const auto& [_, cfg] : configs_)
-            if (cfg.devicePath == p) return true;
-        return false;
+    // Find an existing config for a discovered device.
+    // Prefers usbPath match (stable across reboots) over devicePath match (fallback
+    // for old configs that predate usbPath or for non-USB devices).
+    auto findExisting = [&](const std::string& devPath, const std::string& usbPath)
+        -> std::map<std::string, CameraConfig>::iterator {
+        if (!usbPath.empty()) {
+            for (auto it = configs_.begin(); it != configs_.end(); ++it)
+                if (it->second.usbPath == usbPath) return it;
+        }
+        for (auto it = configs_.begin(); it != configs_.end(); ++it)
+            if (it->second.usbPath.empty() && it->second.devicePath == devPath) return it;
+        return configs_.end();
     };
 
     auto generateName = [&]() {
@@ -186,21 +240,44 @@ void CameraManager::discoverCameras() {
             }
         }
 
-        if (!devicePath.empty()) {
-            GstCaps* caps = gst_device_get_caps(device);
-            capabilities_[devicePath] = parseCaps(caps);
-            if (caps) gst_caps_unref(caps);
-            std::cout << "    -> " << capabilities_[devicePath].size() << " mode(s) discovered" << std::endl;
-        }
-
         if (devicePath.empty()) {
             std::cerr << "    -> could not determine device path, skipping" << std::endl;
-        } else if (pathExists(devicePath)) {
-            std::cout << "    -> already registered" << std::endl;
+            continue;
+        }
+
+        std::string usbPath = resolveUsbPath(devicePath);
+
+        GstCaps* caps = gst_device_get_caps(device);
+        capabilities_[devicePath] = parseCaps(caps);
+        if (caps) gst_caps_unref(caps);
+        std::cout << "    -> " << capabilities_[devicePath].size() << " mode(s) discovered"
+                  << (usbPath.empty() ? "" : " usb=" + usbPath) << std::endl;
+
+        auto it = findExisting(devicePath, usbPath);
+        if (it != configs_.end()) {
+            if (it->second.devicePath != devicePath) {
+                std::cout << "    -> \"" << it->first << "\" device path updated "
+                          << it->second.devicePath << " -> " << devicePath << std::endl;
+                it->second.devicePath = devicePath;
+            } else {
+                std::cout << "    -> already registered as \"" << it->first << "\"" << std::endl;
+            }
+            if (it->second.usbPath.empty() && !usbPath.empty())
+                it->second.usbPath = usbPath;
         } else {
             std::string name = generateName();
             std::cout << "    -> registered as \"" << name << "\" path=" << devicePath << std::endl;
-            configs_[name].devicePath = devicePath;
+            auto& cfg = configs_[name];
+            cfg.devicePath = devicePath;
+            cfg.usbPath    = usbPath;
+            // default to lowest MJPEG resolution (modes[0] after ascending sort)
+            const auto& modes = capabilities_[devicePath];
+            if (!modes.empty()) {
+                cfg.format = modes[0].format;
+                cfg.width  = modes[0].width;
+                cfg.height = modes[0].height;
+                cfg.fps    = modes[0].maxFps;
+            }
         }
     }
 
@@ -217,7 +294,7 @@ void CameraManager::enableCamera(const std::string& id) {
 
     if (pipelines_.count(id)) disableCamera(id);
 
-    auto pipeline = std::make_unique<CameraPipeline>(it->second);
+    auto pipeline = std::make_unique<CameraPipeline>(it->second, stunServer_);
 
     if (onOffer_) {
         pipeline->setOnOfferCreatedCallback([this, id](const std::string& sdp) {
@@ -272,13 +349,27 @@ bool CameraManager::applyConfigPatch(const std::string& id, const json& patch) {
     auto it = configs_.find(id);
     if (it == configs_.end()) return false;
     CameraConfig& cfg = it->second;
-    if (patch.contains("format"))   cfg.format   = patch["format"].get<std::string>();
-    if (patch.contains("width"))    cfg.width    = patch["width"];
-    if (patch.contains("height"))   cfg.height   = patch["height"];
-    if (patch.contains("fps"))      cfg.fps      = patch["fps"];
-    if (patch.contains("bitrate"))  cfg.bitrate  = patch["bitrate"];
-    if (patch.contains("exposure")) cfg.exposure = patch["exposure"];
-    if (pipelines_.count(id)) {
+    bool pipelineChange = false;
+    if (patch.contains("format"))   { cfg.format   = patch["format"].get<std::string>(); pipelineChange = true; }
+    if (patch.contains("width"))    { cfg.width    = patch["width"];                     pipelineChange = true; }
+    if (patch.contains("height"))   { cfg.height   = patch["height"];                    pipelineChange = true; }
+    if (patch.contains("fps")) {
+        cfg.fps = patch["fps"];
+        auto capIt = capabilities_.find(cfg.devicePath);
+        if (capIt != capabilities_.end()) {
+            for (const auto& mode : capIt->second) {
+                if (mode.format == cfg.format && mode.width == cfg.width && mode.height == cfg.height) {
+                    cfg.fps = std::min(cfg.fps, mode.maxFps);
+                    break;
+                }
+            }
+        }
+        pipelineChange = true;
+    }
+    if (patch.contains("quality"))  { cfg.quality  = patch["quality"].get<std::string>(); pipelineChange = true; }
+    if (patch.contains("exposure")) { cfg.exposure = patch["exposure"];                    pipelineChange = true; }
+    if (patch.contains("role"))       cfg.role     = patch["role"].get<std::string>();
+    if (pipelineChange && pipelines_.count(id)) {
         disableCamera(id);
         enableCamera(id);
     }
@@ -313,13 +404,16 @@ std::string CameraManager::buildStateJson() const {
         cameras.push_back({
             {"id",           id},
             {"name",         cfg.name.empty() ? id : cfg.name},
+            {"role",         cfg.role},
             {"devicePath",   cfg.devicePath},
+            {"usbPath",      cfg.usbPath},
             {"format",       cfg.format},
             {"enabled",      pipelines_.count(id) > 0},
             {"width",        cfg.width},
             {"height",       cfg.height},
             {"fps",          cfg.fps},
-            {"bitrate",      cfg.bitrate},
+            {"quality",      cfg.quality},
+            {"bitrate",      cfg.computeBitrate()},
             {"exposure",     cfg.exposure},
             {"capabilities", caps},
         });

@@ -1,28 +1,33 @@
 #include <csignal>
 #include <cstdlib>
+#include <ctime>
 #include <gst/gst.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
 #include "CameraManager.hpp"
+#include "MissionManager.hpp"
 #include "WsServer.hpp"
 
 using json = nlohmann::json;
 
 static constexpr int kDefaultWsPort = 8081;
 
-static const char* kConfigPath = "cameras.json";
+static const char* kConfigPath   = "cameras.json";
+static const char* kMissionsPath = "missions.json";
 
 static GMainLoop* gLoop = nullptr;
 
 static void printUsage(const char* prog) {
-    std::cerr << "Usage: " << prog << " [--ws-port <port>]\n"
-              << "  --ws-port  WebSocket signaling port (default " << kDefaultWsPort << ")\n";
+    std::cerr << "Usage: " << prog << " [--ws-port <port>] [--stun-ip <ip>]\n"
+              << "  --ws-port  WebSocket signaling port (default " << kDefaultWsPort << ")\n"
+              << "  --stun-ip  IP of STUN server (coturn) running on this machine\n";
 }
 
 int main(int argc, char* argv[]) {
-    int wsPort = kDefaultWsPort;
+    int         wsPort   = kDefaultWsPort;
+    std::string stunIp;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -30,9 +35,11 @@ int main(int argc, char* argv[]) {
             int val = std::atoi(argv[++i]);
             if (val <= 0 || val > 65535) {
                 std::cerr << "Invalid port: " << argv[i] << "\n";
-                 return 1;
-           }
+                return 1;
+            }
             wsPort = val;
+        } else if (arg == "--stun-ip" && i + 1 < argc) {
+            stunIp = argv[++i];
         } else if (arg == "--help" || arg == "-h") {
             printUsage(argv[0]);
             return 0;
@@ -45,11 +52,18 @@ int main(int argc, char* argv[]) {
 
     gst_init(&argc, &argv);
 
-    CameraManager manager;
-    WsServer      ws;
+    CameraManager  manager;
+    MissionManager missions;
+    WsServer       ws;
+
+    if (!stunIp.empty())
+        manager.setStunServer("stun://" + stunIp + ":3478");
 
     auto sendState = [&]() {
         ws.sendMessage(manager.buildStateJson());
+    };
+    auto sendMissionsState = [&]() {
+        ws.sendMessage(missions.buildMissionsStateJson().dump());
     };
 
     manager.setOfferCallback([&](const std::string& id, const std::string& sdp) {
@@ -63,7 +77,12 @@ int main(int argc, char* argv[]) {
     manager.discoverCameras();
     manager.saveConfigs(kConfigPath);
 
-    ws.setOnConnectCallback(sendState);
+    missions.load(kMissionsPath);
+
+    ws.setOnConnectCallback([&]() {
+        sendState();
+        sendMissionsState();
+    });
 
     ws.setOnMessageCallback([&](const std::string& raw) {
         try {
@@ -88,6 +107,35 @@ int main(int argc, char* argv[]) {
                 manager.renameCamera(msg["camera_id"], msg["name"]);
                 manager.saveConfigs(kConfigPath);
                 sendState();
+            } else if (type == "list_missions") {
+                sendMissionsState();
+            } else if (type == "save_mission") {
+                std::string mName = msg.value("name", "Unnamed Mission");
+                std::string mId   = msg.value("id",   "");
+                if (mId.empty())
+                    mId = "mission_" + std::to_string(std::time(nullptr));
+                missions.saveMission(mId, mName, manager.getConfigs());
+                missions.save(kMissionsPath);
+                sendMissionsState();
+            } else if (type == "load_mission") {
+                const auto* m = missions.getMission(msg["id"]);
+                if (m) {
+                    for (const auto& [camId, cfg] : m->cameras)
+                        manager.updateConfig(camId, cfg);
+                    manager.saveConfigs(kConfigPath);
+                    missions.setActiveMission(msg["id"]);
+                    missions.save(kMissionsPath);
+                    sendState();
+                    sendMissionsState();
+                }
+            } else if (type == "delete_mission") {
+                missions.deleteMission(msg["id"]);
+                missions.save(kMissionsPath);
+                sendMissionsState();
+            } else if (type == "set_active_mission") {
+                missions.setActiveMission(msg["id"]);
+                missions.save(kMissionsPath);
+                sendMissionsState();
             }
         } catch (const std::exception& e) {
             std::cerr << "ws message error: " << e.what() << std::endl;
