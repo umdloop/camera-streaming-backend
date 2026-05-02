@@ -222,7 +222,8 @@ void CameraManager::discoverCameras() {
 
         GstStructure* props = gst_device_get_properties(device);
         if (props) {
-            const gchar* p = gst_structure_get_string(props, "device.path");
+            const gchar* p = gst_structure_get_string(props, "api.v4l2.path");
+            if (!p) p = gst_structure_get_string(props, "device.path");
             if (p) devicePath = p;
             gst_structure_free(props);
         }

@@ -23,13 +23,20 @@ fi
 
 echo "Using STUN server at $STUN_IP:3478"
 
+# Kill any leftover instances from a previous run
+pkill -f turnserver 2>/dev/null || true
+pkill -f camera-stream 2>/dev/null || true
+
 # Start coturn (STUN only, no auth, no logging noise)
 turnserver --no-auth --stun-only --log-file /dev/null &
 STUN_PID=$!
 
 cleanup() {
     kill "$STUN_PID" 2>/dev/null || true
+    kill "$CAM_PID" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
-exec "$SCRIPT_DIR/build/camera-stream" --stun-ip "$STUN_IP" "$@"
+"$SCRIPT_DIR/build/camera-stream" --stun-ip "$STUN_IP" "$@" &
+CAM_PID=$!
+wait "$CAM_PID"
