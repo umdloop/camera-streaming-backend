@@ -108,7 +108,8 @@
     const WS_URL   = 'ws://localhost:8081';
     const STUN_URL = 'stun:' + new URL(WS_URL).hostname + ':3478';
 
-    const pcs = new Map();
+    const pcs     = new Map();
+    const streams = new Map();
     let ws;
     let missionsState = { activeMission: '', missions: [] };
 
@@ -156,8 +157,10 @@
           pcs.set(id, pc);
 
           pc.ontrack = (e) => {
+            const stream = e.streams[0] ?? new MediaStream([e.track]);
+            streams.set(id, stream);
             const video = document.getElementById(`video-${id}`);
-            if (video) video.srcObject = e.streams[0] ?? new MediaStream([e.track]);
+            if (video) video.srcObject = stream;
           };
 
           pc.onicecandidate = (e) => {
@@ -243,6 +246,7 @@
       send({ type: 'disable', camera_id: id });
       pcs.get(id)?.close();
       pcs.delete(id);
+      streams.delete(id);
       const video = document.getElementById(`video-${id}`);
       if (video) video.srcObject = null;
     }
@@ -261,6 +265,11 @@
         return;
       }
       for (const cam of cameras) container.appendChild(makeCameraCard(cam));
+      // Re-attach active streams lost when the DOM was rebuilt
+      for (const [id, stream] of streams) {
+        const video = document.getElementById(`video-${id}`);
+        if (video) video.srcObject = stream;
+      }
     }
 
     function makeCameraCard(cam) {
