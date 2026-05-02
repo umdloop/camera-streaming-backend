@@ -27,7 +27,7 @@ static std::string resolveUsbPath(const std::string& devPath) {
     //   .../usb1/1-1/1-1.2/1-1.2:1.0/video4linux/video0
     // The USB interface component contains ':' and starts with digits (e.g. "1-1.2:1.0").
     // Strip the interface suffix to get the device path ("1-1.2").
-    std::istringstream ss(std::string(resolved));
+    std::istringstream ss{std::string(resolved)};
     std::string component;
     while (std::getline(ss, component, '/')) {
         auto colon = component.find(':');
