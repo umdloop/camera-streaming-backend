@@ -105,7 +105,8 @@
   <div id="cameras"></div>
 
   <script>
-    const WS_URL = 'ws://localhost:8081';
+    const WS_URL    = `ws://${location.hostname}:8081`;
+    const WHEP_BASE = `http://${location.hostname}:8889`;
 
     const pcs     = new Map();
     const streams = new Map();
@@ -148,38 +149,53 @@
         case 'stats':
           updateStats(msg.camera_id, msg.fps, msg.bitrate);
           break;
-
-        case 'offer': {
-          const { id, sdp } = msg;
-          pcs.get(id)?.close();
-          const pc = new RTCPeerConnection({ iceServers: [] });
-          pcs.set(id, pc);
-
-          pc.ontrack = (e) => {
-            const stream = e.streams[0] ?? new MediaStream([e.track]);
-            streams.set(id, stream);
-            const video = document.getElementById(`video-${id}`);
-            if (video) video.srcObject = stream;
-          };
-
-          pc.onicecandidate = (e) => {
-            if (!e.candidate) return;
-            send({ type: 'ice', id, candidate: e.candidate.candidate, sdpMLineIndex: e.candidate.sdpMLineIndex });
-          };
-
-          pc.setRemoteDescription({ type: 'offer', sdp })
-            .then(() => pc.createAnswer())
-            .then((answer) => { pc.setLocalDescription(answer); send({ type: 'answer', id, sdp: answer.sdp }); })
-            .catch((err) => console.error('WebRTC offer handling failed:', err));
-          break;
-        }
-
-        case 'ice':
-          pcs.get(msg.id)
-            ?.addIceCandidate({ candidate: msg.candidate, sdpMLineIndex: msg.sdpMLineIndex })
-            .catch(() => {});
-          break;
       }
+    }
+
+    // ── WHEP ────────────────────────────────────────────────────────────────
+
+    async function startWhep(id) {
+      // iceServers: [] is critical — empty list forces host candidates only,
+      // no STUN. The rover LAN is airgapped.
+      const pc = new RTCPeerConnection({ iceServers: [] });
+      pcs.set(id, pc);
+      pc.addTransceiver('video', { direction: 'recvonly' });
+      pc.ontrack = (e) => {
+        const stream = e.streams[0] ?? new MediaStream([e.track]);
+        streams.set(id, stream);
+        const video = document.getElementById(`video-${id}`);
+        if (video) video.srcObject = stream;
+      };
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        // The backend's RTSP publish handshake may lag the state broadcast by
+        // a few hundred ms; retry on 404 while MediaMTX has no publisher yet.
+        let r;
+        for (let attempt = 0; attempt < 10; attempt++) {
+          if (!pcs.has(id)) return; // stopped while waiting
+          r = await fetch(`${WHEP_BASE}/${id}/whep`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/sdp' },
+            body: offer.sdp,
+          });
+          if (r.ok || r.status !== 404) break;
+          await new Promise(res => setTimeout(res, 300));
+        }
+        if (!r.ok) throw new Error(`WHEP ${r.status}`);
+        await pc.setRemoteDescription({ type: 'answer', sdp: await r.text() });
+      } catch (err) {
+        console.error(`WHEP start failed for ${id}:`, err);
+        stopWhep(id);
+      }
+    }
+
+    function stopWhep(id) {
+      pcs.get(id)?.close();
+      pcs.delete(id);
+      streams.delete(id);
+      const video = document.getElementById(`video-${id}`);
+      if (video) video.srcObject = null;
     }
 
     // ── Mission panel ───────────────────────────────────────────────────────
@@ -243,11 +259,7 @@
 
     function disableCamera(id) {
       send({ type: 'disable', camera_id: id });
-      pcs.get(id)?.close();
-      pcs.delete(id);
-      streams.delete(id);
-      const video = document.getElementById(`video-${id}`);
-      if (video) video.srcObject = null;
+      stopWhep(id);
     }
 
     function setConfig(id, config) { send({ type: 'set_config', camera_id: id, config }); }
@@ -263,7 +275,18 @@
         container.textContent = 'No cameras detected.';
         return;
       }
-      for (const cam of cameras) container.appendChild(makeCameraCard(cam));
+      const enabledIds = new Set();
+      for (const cam of cameras) {
+        container.appendChild(makeCameraCard(cam));
+        if (cam.enabled) enabledIds.add(cam.id);
+      }
+      // Drive WHEP state from server-reported enabled flag.
+      for (const id of enabledIds) {
+        if (!pcs.has(id)) startWhep(id);
+      }
+      for (const id of [...pcs.keys()]) {
+        if (!enabledIds.has(id)) stopWhep(id);
+      }
       // Re-attach active streams lost when the DOM was rebuilt
       for (const [id, stream] of streams) {
         const video = document.getElementById(`video-${id}`);

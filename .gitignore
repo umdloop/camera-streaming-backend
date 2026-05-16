@@ -2,3 +2,6 @@ cameras.json
 build/
 .cache/
 .DS_STORE
+mediamtx
+mediamtx_*.tar.gz
+mediamtx.local.yml
