@@ -25,7 +25,6 @@ public:
 
     void setOfferCallback(OnOfferCallback cb)  { onOffer_      = cb; }
     void setIceCallback(OnIceCallback cb)      { onIce_        = cb; }
-    void setStunServer(const std::string& url) { stunServer_   = url; }
 
     void loadConfigs(const std::string& path);
     void saveConfigs(const std::string& path) const;
@@ -60,5 +59,4 @@ private:
     std::set<std::string>                                  activeCameraIds_;
     OnOfferCallback onOffer_;
     OnIceCallback   onIce_;
-    std::string     stunServer_;
 };

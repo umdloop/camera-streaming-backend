@@ -122,8 +122,8 @@ gboolean CameraPipeline::doCreateOffer(gpointer data) {
 
 // ── CameraPipeline ────────────────────────────────────────────────────────────
 
-CameraPipeline::CameraPipeline(const CameraConfig& config, std::string stunServer)
-    : config_(config), stunServer_(std::move(stunServer)) {}
+CameraPipeline::CameraPipeline(const CameraConfig& config)
+    : config_(config) {}
 
 CameraPipeline::~CameraPipeline() {
     stop();
@@ -163,9 +163,6 @@ bool CameraPipeline::start() {
         stop();
         return false;
     }
-
-    if (!stunServer_.empty())
-        g_object_set(webrtcbin_, "stun-server", stunServer_.c_str(), nullptr);
 
     g_signal_connect(webrtcbin_, "on-negotiation-needed", G_CALLBACK(onNegotiationNeeded), this);
     g_signal_connect(webrtcbin_, "on-ice-candidate",      G_CALLBACK(onIceCandidate),      this);

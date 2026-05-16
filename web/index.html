@@ -105,8 +105,7 @@
   <div id="cameras"></div>
 
   <script>
-    const WS_URL   = 'ws://localhost:8081';
-    const STUN_URL = 'stun:' + new URL(WS_URL).hostname + ':3478';
+    const WS_URL = 'ws://localhost:8081';
 
     const pcs     = new Map();
     const streams = new Map();
@@ -153,7 +152,7 @@
         case 'offer': {
           const { id, sdp } = msg;
           pcs.get(id)?.close();
-          const pc = new RTCPeerConnection({ iceServers: [{ urls: STUN_URL }] });
+          const pc = new RTCPeerConnection({ iceServers: [] });
           pcs.set(id, pc);
 
           pc.ontrack = (e) => {

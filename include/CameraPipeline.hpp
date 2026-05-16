@@ -21,7 +21,7 @@ public:
     using OnOfferCreatedCallback = std::function<void(const std::string& sdp)>;
     using OnErrorCallback = std::function<void(const std::string& message)>;
 
-    CameraPipeline(const CameraConfig& config, std::string stunServer = {});
+    CameraPipeline(const CameraConfig& config);
     ~CameraPipeline();
 
     bool start();
@@ -43,7 +43,6 @@ public:
 
 private:
     CameraConfig config_;
-    std::string  stunServer_;
     GstElement* pipeline_  = nullptr;
     GstElement* webrtcbin_ = nullptr;
     guint       busWatchId_ = 0;

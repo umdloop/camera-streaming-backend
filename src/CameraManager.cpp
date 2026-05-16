@@ -671,7 +671,7 @@ void CameraManager::enableCamera(int clientId, const std::string& id) {
     std::string lastError;
     constexpr int kMaxAttempts = 3;
     for (int attempt = 1; attempt <= kMaxAttempts; ++attempt) {
-        auto pipeline = std::make_unique<CameraPipeline>(it->second, stunServer_);
+        auto pipeline = std::make_unique<CameraPipeline>(it->second);
 
         if (onOffer_) {
             pipeline->setOnOfferCreatedCallback([this, clientId, id](const std::string& sdp) {

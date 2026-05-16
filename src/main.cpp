@@ -20,14 +20,12 @@ static const char* kMissionsPath = "missions.json";
 static GMainLoop* gLoop = nullptr;
 
 static void printUsage(const char* prog) {
-    std::cerr << "Usage: " << prog << " [--ws-port <port>] [--stun-ip <ip>]\n"
-              << "  --ws-port  WebSocket signaling port (default " << kDefaultWsPort << ")\n"
-              << "  --stun-ip  IP of STUN server (coturn) running on this machine\n";
+    std::cerr << "Usage: " << prog << " [--ws-port <port>]\n"
+              << "  --ws-port  WebSocket signaling port (default " << kDefaultWsPort << ")\n";
 }
 
 int main(int argc, char* argv[]) {
-    int         wsPort   = kDefaultWsPort;
-    std::string stunIp;
+    int wsPort = kDefaultWsPort;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -38,8 +36,6 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             wsPort = val;
-        } else if (arg == "--stun-ip" && i + 1 < argc) {
-            stunIp = argv[++i];
         } else if (arg == "--help" || arg == "-h") {
             printUsage(argv[0]);
             return 0;
@@ -55,9 +51,6 @@ int main(int argc, char* argv[]) {
     CameraManager  manager;
     MissionManager missions;
     WsServer       ws;
-
-    if (!stunIp.empty())
-        manager.setStunServer("stun://" + stunIp + ":3478");
 
     auto sendState = [&](int clientId) {
         ws.sendMessageToClient(clientId, manager.buildStateJson(clientId));
