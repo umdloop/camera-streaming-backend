@@ -4,4 +4,3 @@ build/
 .DS_STORE
 mediamtx
 mediamtx_*.tar.gz
-mediamtx.local.yml
