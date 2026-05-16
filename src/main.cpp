@@ -66,24 +66,6 @@ int main(int argc, char* argv[]) {
         ws.sendMessageToClient(clientId, missions.buildMissionsStateJson().dump());
     };
 
-    manager.setOfferCallback([&](int clientId, const std::string& id, const std::string& sdp) {
-        ws.sendMessageToClient(clientId, json{
-            {"type","offer"},
-            {"client_id",clientId},
-            {"id",id},
-            {"sdp",sdp}
-        }.dump());
-    });
-    manager.setIceCallback([&](int clientId, const std::string& id, const std::string& candidate, int mline) {
-        ws.sendMessageToClient(clientId, json{
-            {"type","ice"},
-            {"client_id",clientId},
-            {"id",id},
-            {"candidate",candidate},
-            {"sdpMLineIndex",mline}
-        }.dump());
-    });
-
     manager.loadConfigs(kConfigPath);
     manager.discoverCameras();
     manager.saveConfigs(kConfigPath);
@@ -106,11 +88,7 @@ int main(int argc, char* argv[]) {
             auto msg  = json::parse(raw);
             auto type = msg["type"].get<std::string>();
 
-            if (type == "answer") {
-                manager.setRemoteAnswer(clientId, msg["id"], msg["sdp"]);
-            } else if (type == "ice") {
-                manager.addIceCandidate(clientId, msg["id"], msg["candidate"], msg["sdpMLineIndex"]);
-            } else if (type == "enable") {
+            if (type == "enable") {
                 manager.enableCamera(clientId, msg["camera_id"]);
                 broadcastState();
             } else if (type == "disable") {

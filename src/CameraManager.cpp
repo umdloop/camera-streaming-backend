@@ -592,6 +592,21 @@ void CameraManager::discoverCameras() {
                   << std::endl;
     }
 
+    // Always expose a videotestsrc-backed "test" camera so the UI has something
+    // to stream even when no real cameras are usable on this machine.
+    {
+        const std::string testId = "test";
+        auto& cfg = configs_[testId];
+        cfg.devicePath = "test";
+        cfg.name       = "Test pattern";
+        cfg.format     = "";
+        cfg.width      = 640;
+        cfg.height     = 480;
+        cfg.fps        = 30;
+        if (cfg.quality.empty()) cfg.quality = "low";
+        activeCameraIds_.insert(testId);
+    }
+
     for (auto it = pipelines_.begin(); it != pipelines_.end(); ) {
         if (activeCameraIds_.count(cameraIdFromPipelineKey(it->first))) {
             ++it;
@@ -671,20 +686,8 @@ void CameraManager::enableCamera(int clientId, const std::string& id) {
     std::string lastError;
     constexpr int kMaxAttempts = 3;
     for (int attempt = 1; attempt <= kMaxAttempts; ++attempt) {
-        auto pipeline = std::make_unique<CameraPipeline>(it->second);
+        auto pipeline = std::make_unique<CameraPipeline>(it->second, id);
 
-        if (onOffer_) {
-            pipeline->setOnOfferCreatedCallback([this, clientId, id](const std::string& sdp) {
-                std::cout << "Routing offer: client=" << clientId << " camera=" << id << std::endl;
-                onOffer_(clientId, id, sdp);
-            });
-        }
-        if (onIce_) {
-            pipeline->setOnIceCandidateCallback([this, clientId, id](const std::string& candidate, int mline) {
-                std::cout << "Routing ICE: client=" << clientId << " camera=" << id << std::endl;
-                onIce_(clientId, id, candidate, mline);
-            });
-        }
         pipeline->setOnErrorCallback([clientId, id](const std::string& message) {
             std::cerr << "Pipeline error for client=" << clientId
                       << " camera=" << id << ": " << message << std::endl;
@@ -809,18 +812,6 @@ bool CameraManager::applyConfigPatch(const std::string& id, const json& patch) {
         }
     }
     return true;
-}
-
-void CameraManager::setRemoteAnswer(int clientId, const std::string& id, const std::string& sdp) {
-    std::cout << "Routing answer: client=" << clientId << " camera=" << id << std::endl;
-    auto it = pipelines_.find(pipelineKey(clientId, id));
-    if (it != pipelines_.end()) it->second->setRemoteAnswer(sdp);
-}
-
-void CameraManager::addIceCandidate(int clientId, const std::string& id, const std::string& candidate, int sdpMLineIndex) {
-    std::cout << "Routing remote ICE: client=" << clientId << " camera=" << id << std::endl;
-    auto it = pipelines_.find(pipelineKey(clientId, id));
-    if (it != pipelines_.end()) it->second->addIceCandidate(candidate, sdpMLineIndex);
 }
 
 std::string CameraManager::buildStateJson(int clientId) const {
