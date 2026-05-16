@@ -22,7 +22,7 @@ webrtcICEServers2: []
 
 # Advertise EXACTLY the Jetson's LAN IP as the WebRTC host candidate. This
 # stops MediaMTX from also offering 172.17.0.1 (docker0) or any wlan IP.
-webrtcIPsFromInterfaces: no
+webrtcIPsFromInterfaces: yes
 webrtcAdditionalHosts:
   - 192.168.88.90
 
