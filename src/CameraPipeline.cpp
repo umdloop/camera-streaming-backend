@@ -1,7 +1,6 @@
 #include "CameraPipeline.hpp"
 #include "PlatformDetect.hpp"
 #include <chrono>
-#include <gst/sdp/gstsdpmessage.h>
 #include <iostream>
 #include <sstream>
 #include <sys/time.h>
@@ -31,7 +30,9 @@ static bool isV4l2AllocationError(const std::string& message) {
 }
 
 
-static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSpecifics& specs) {
+static std::string buildPipelineString(const CameraConfig& cfg,
+                                       const PlatformSpecifics& specs,
+                                       const std::string& streamName) {
     const bool isMjpg = (cfg.format == "MJPG");
 
     std::string src;
@@ -78,9 +79,15 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
     const int bitrate = cfg.computeBitrate();
     std::string enc = specs.encoder;
     if (specs.encoder == "vtenc_h264") {
-        enc += " realtime=true bitrate=" + std::to_string(bitrate / 1000);
+        // allow-frame-reordering=false suppresses B-frames; WebRTC's H264
+        // profile (constrained-baseline) doesn't allow them.
+        enc += " realtime=true allow-frame-reordering=false"
+               " bitrate=" + std::to_string(bitrate / 1000);
     } else if (specs.encoder == "nvv4l2h264enc") {
-        enc += " insert-sps-pps=true idrinterval=30 bitrate=" + std::to_string(bitrate);
+        // num-B-Frames=0: WebRTC's H264 profile (constrained-baseline) forbids
+        // B-frames. profile=baseline picks the right SPS profile_idc too.
+        enc += " insert-sps-pps=true idrinterval=30 num-B-Frames=0 profile=0"
+               " bitrate=" + std::to_string(bitrate);
     } else {
         // x264enc expects kbits/sec
         enc += " tune=zerolatency bitrate=" + std::to_string(bitrate / 1000) + " speed-preset=ultrafast key-int-max=30";
@@ -92,38 +99,14 @@ static std::string buildPipelineString(const CameraConfig& cfg, const PlatformSp
            " ! " + enc +
            " ! h264parse name=parse"
            " ! video/x-h264,stream-format=byte-stream,alignment=au"
-           " ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency"
-           " ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1"
-           " ! webrtcbin name=webrtcbin bundle-policy=max-bundle";
-}
-
-// ── Offer creation helpers ────────────────────────────────────────────────────
-
-struct NegotiationCtx {
-    GstElement*      webrtcbin;
-    CameraPipeline*  pipeline;
-};
-
-gboolean CameraPipeline::doCreateOffer(gpointer data) {
-    auto* ctx = static_cast<NegotiationCtx*>(data);
-    auto* self = ctx->pipeline;
-    self->offerSourceId_ = 0;
-    if (self->failed_.load() || !self->webrtcbin_) {
-        delete ctx;
-        return G_SOURCE_REMOVE;
-    }
-
-    std::cout << "[" << timestamp() << "] Creating offer on main loop" << std::endl;
-    GstPromise* promise = gst_promise_new_with_change_func(CameraPipeline::onOfferCreated, self, nullptr);
-    g_signal_emit_by_name(self->webrtcbin_, "create-offer", nullptr, promise);
-    delete ctx;
-    return G_SOURCE_REMOVE;
+           " ! rtspclientsink name=sink protocols=tcp latency=0"
+           " location=rtsp://127.0.0.1:8554/" + streamName;
 }
 
 // ── CameraPipeline ────────────────────────────────────────────────────────────
 
-CameraPipeline::CameraPipeline(const CameraConfig& config)
-    : config_(config) {}
+CameraPipeline::CameraPipeline(const CameraConfig& config, const std::string& streamName)
+    : config_(config), streamName_(streamName) {}
 
 CameraPipeline::~CameraPipeline() {
     stop();
@@ -140,7 +123,7 @@ bool CameraPipeline::start() {
     auto specs = PlatformDetect::getPlatformSpecifics();
     if (config_.devicePath == "test") specs.source = "videotestsrc";
 
-    std::string pipelineStr = buildPipelineString(config_, specs);
+    std::string pipelineStr = buildPipelineString(config_, specs, streamName_);
     std::cout << "[" << timestamp() << "] Starting pipeline: " << pipelineStr << std::endl;
 
     GError* error = nullptr;
@@ -156,16 +139,6 @@ bool CameraPipeline::start() {
         busWatchId_ = gst_bus_add_watch(bus, CameraPipeline::onBusMessage, this);
         gst_object_unref(bus);
     }
-
-    webrtcbin_ = gst_bin_get_by_name(GST_BIN(pipeline_), "webrtcbin");
-    if (!webrtcbin_) {
-        std::cerr << "webrtcbin element not found" << std::endl;
-        stop();
-        return false;
-    }
-
-    g_signal_connect(webrtcbin_, "on-negotiation-needed", G_CALLBACK(onNegotiationNeeded), this);
-    g_signal_connect(webrtcbin_, "on-ice-candidate",      G_CALLBACK(onIceCandidate),      this);
 
     // Probe h264parse src (alignment=au): one buffer per video frame, accurate FPS + bitrate.
     GstElement* parse = gst_bin_get_by_name(GST_BIN(pipeline_), "parse");
@@ -225,50 +198,17 @@ bool CameraPipeline::start() {
         return false;
     }
 
-    // Fallback: explicitly schedule offer creation on the GLib main loop.
-    // on-negotiation-needed may not fire reliably when set_state is called
-    // from a non-main thread (e.g., the WebSocket thread).
-    // offerScheduled_ prevents a double-offer if on-negotiation-needed also fires.
-    bool expected = false;
-    if (offerScheduled_.compare_exchange_strong(expected, true))
-        offerSourceId_ = g_idle_add(CameraPipeline::doCreateOffer, new NegotiationCtx{webrtcbin_, this});
-
     return true;
 }
 
 void CameraPipeline::stop() {
-    offerScheduled_.store(false);
-    removeSourceIfActive(offerSourceId_);
     removeSourceIfActive(busWatchId_);
-    if (webrtcbin_) {
-        gst_element_set_state(webrtcbin_, GST_STATE_NULL);
-        gst_object_unref(webrtcbin_);
-        webrtcbin_ = nullptr;
-    }
     if (pipeline_) {
         std::cout << "[" << timestamp() << "] Stopping pipeline" << std::endl;
         gst_element_set_state(pipeline_, GST_STATE_NULL);
         gst_object_unref(pipeline_);
         pipeline_ = nullptr;
     }
-}
-
-void CameraPipeline::setRemoteAnswer(const std::string& sdp) {
-    if (!webrtcbin_) return;
-    GstSDPMessage* sdpMsg = nullptr;
-    gst_sdp_message_new(&sdpMsg);
-    gst_sdp_message_parse_buffer(reinterpret_cast<const guint8*>(sdp.c_str()), sdp.size(), sdpMsg);
-    GstWebRTCSessionDescription* answer =
-        gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER, sdpMsg);
-    GstPromise* promise = gst_promise_new();
-    g_signal_emit_by_name(webrtcbin_, "set-remote-description", answer, promise);
-    gst_promise_unref(promise);
-    gst_webrtc_session_description_free(answer);
-}
-
-void CameraPipeline::addIceCandidate(const std::string& candidate, int sdpMLineIndex) {
-    if (!webrtcbin_) return;
-    g_signal_emit_by_name(webrtcbin_, "add-ice-candidate", sdpMLineIndex, candidate.c_str());
 }
 
 PipelineStats CameraPipeline::getStats() {
@@ -353,44 +293,4 @@ gboolean CameraPipeline::onBusMessage(GstBus*, GstMessage* message, gpointer use
     }
 
     return G_SOURCE_CONTINUE;
-}
-
-void CameraPipeline::onNegotiationNeeded(GstElement* webrtcbin, gpointer user_data) {
-    auto* self = static_cast<CameraPipeline*>(user_data);
-    std::cout << "[" << timestamp() << "] on-negotiation-needed fired" << std::endl;
-    bool expected = false;
-    if (self->offerScheduled_.compare_exchange_strong(expected, true))
-        self->offerSourceId_ = g_idle_add(CameraPipeline::doCreateOffer, new NegotiationCtx{webrtcbin, self});
-}
-
-void CameraPipeline::onIceCandidate(GstElement*, guint mlineindex, gchar* candidate, gpointer user_data) {
-    auto* self = static_cast<CameraPipeline*>(user_data);
-    if (self->onIceCandidate_) self->onIceCandidate_(candidate, mlineindex);
-}
-
-void CameraPipeline::onOfferCreated(GstPromise* promise, gpointer user_data) {
-    std::cout << "[" << timestamp() << "] Offer created" << std::endl;
-    auto* self = static_cast<CameraPipeline*>(user_data);
-    if (self->failed_.load() || !self->webrtcbin_) {
-        gst_promise_unref(promise);
-        return;
-    }
-
-    const GstStructure* reply = gst_promise_get_reply(promise);
-    GstWebRTCSessionDescription* offer = nullptr;
-    gst_structure_get(reply, "offer", GST_TYPE_WEBRTC_SESSION_DESCRIPTION, &offer, nullptr);
-    gst_promise_unref(promise);
-
-    if (offer) {
-        GstPromise* localDescPromise = gst_promise_new();
-        g_signal_emit_by_name(self->webrtcbin_, "set-local-description", offer, localDescPromise);
-        gst_promise_unref(localDescPromise);
-
-        if (self->onOfferCreated_) {
-            gchar* sdpStr = gst_sdp_message_as_text(offer->sdp);
-            self->onOfferCreated_(sdpStr);
-            g_free(sdpStr);
-        }
-        gst_webrtc_session_description_free(offer);
-    }
 }

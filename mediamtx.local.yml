@@ -1,0 +1,41 @@
+logLevel: info
+
+# Local dev override of mediamtx.yml. The committed config pins the Jetson's
+# LAN IP and locks publish to loopback — neither is right for laptop testing.
+
+rtsp: yes
+rtspAddress: :8554
+protocols: [tcp]
+
+webrtc: yes
+webrtcAddress: :8889
+webrtcLocalUDPAddress: :8189
+webrtcLocalTCPAddress: ''
+
+hls: no
+rtmp: no
+srt: no
+api: yes                      # flip on locally so `curl :9997/v3/paths/list` works
+
+webrtcICEServers2: []
+
+# Let MediaMTX auto-detect interfaces locally so browser on the same box
+# (or another box on your LAN) can reach the advertised host candidates.
+webrtcIPsFromInterfaces: yes
+webrtcAdditionalHosts: [127.0.0.1]
+
+# No auth locally — easier than fighting with permissions during dev.
+authMethod: internal
+authInternalUsers:
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: publish
+      - action: read
+      - action: api
+      - action: metrics
+      - action: pprof
+
+paths:
+  all_others:

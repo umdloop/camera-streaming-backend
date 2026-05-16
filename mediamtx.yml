@@ -1,0 +1,48 @@
+logLevel: info
+
+# ── Servers we use ─────────────────────────────────────────────────────────
+rtsp: yes
+rtspAddress: :8554            # ingest from rtspclientsink on loopback
+protocols: [tcp]              # loopback — TCP is simpler than UDP buffer tuning
+
+webrtc: yes
+webrtcAddress: :8889          # WHEP HTTP endpoint
+webrtcLocalUDPAddress: :8189  # WebRTC media UDP port (fixed; useful if firewall)
+webrtcLocalTCPAddress: ''     # disable WebRTC-over-TCP fallback (LAN doesn't need it)
+
+# ── Everything else off ────────────────────────────────────────────────────
+hls: no
+rtmp: no
+srt: no
+api: no                       # MediaMTX HTTP API; flip to yes if you want /v3/paths
+
+# ── ICE config: airgapped LAN ──────────────────────────────────────────────
+# No public STUN. No TURN. Host candidates only.
+webrtcICEServers2: []
+
+# Advertise EXACTLY the Jetson's LAN IP as the WebRTC host candidate. This
+# stops MediaMTX from also offering 172.17.0.1 (docker0) or any wlan IP.
+webrtcIPsFromInterfaces: no
+webrtcAdditionalHosts:
+  - 192.168.88.90
+
+# ── Auth ───────────────────────────────────────────────────────────────────
+# Publishers limited to loopback (= our backend). Readers = anyone on LAN.
+# No passwords — this is a closed network with one device on it.
+authMethod: internal
+authInternalUsers:
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: read
+  - user: any
+    pass:
+    ips: [127.0.0.1/32]
+    permissions:
+      - action: publish
+
+# ── Paths ──────────────────────────────────────────────────────────────────
+# Accept any path name. The C++ backend chooses the path per camera id.
+paths:
+  all_others:

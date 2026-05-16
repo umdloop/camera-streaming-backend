@@ -5,10 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_compile_definitions(GST_USE_UNSTABLE_API)
-
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-webrtc-1.0 gstreamer-sdp-1.0 gstreamer-app-1.0 nice)
+pkg_check_modules(GST REQUIRED gstreamer-1.0 gstreamer-app-1.0)
 pkg_check_modules(LWS REQUIRED libwebsockets)
 
 find_package(OpenSSL REQUIRED)
