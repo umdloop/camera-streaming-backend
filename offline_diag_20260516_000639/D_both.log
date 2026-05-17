@@ -1,0 +1,268 @@
+discoverCameras: found 11 device(s)
+  [0] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video0 key=usb:1-2.1.1 modes=7
+  [1] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video2 key=usb:1-2.1.2 modes=7
+  [2] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video8 key=usb:1-2.1.3 modes=7
+  [3] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video12 key=usb:1-2.1.4 modes=7
+  [4] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video4 key=usb:1-2.3.1 modes=7
+  [5] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video14 key=usb:1-2.3.2.1 modes=7
+  [6] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video18 key=usb:1-2.3.2.2 modes=7
+  [7] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video20 key=usb:1-2.3.2.4 modes=7
+  [8] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video10 key=usb:1-2.4.1 modes=7
+  [9] name="Innomaker-U20CAM-1080p-S1: Inno"
+    -> path=/dev/video16 key=usb:1-2.4.2 modes=7
+  [10] name="ZED 2i: ZED 2i"
+    -> path=/dev/video6 key=usb:2-1.2 modes=4 crop=left-half
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video0 key=usb:1-2.1.1 as "camera_0"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video2 key=usb:1-2.1.2 as "camera_1"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video8 key=usb:1-2.1.3 as "camera_2"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video12 key=usb:1-2.1.4 as "camera_3"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video4 key=usb:1-2.3.1 as "camera_4"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video14 key=usb:1-2.3.2.1 as "camera_5"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video18 key=usb:1-2.3.2.2 as "camera_6"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video20 key=usb:1-2.3.2.4 as "camera_7"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video10 key=usb:1-2.4.1 as "camera_8"
+  accepted name="Innomaker-U20CAM-1080p-S1: Inno" path=/dev/video16 key=usb:1-2.4.2 as "camera_9"
+  accepted name="ZED 2i: ZED 2i" path=/dev/video6 key=usb:2-1.2 as "camera_10"
+WebSocket server started on port 8081
+Client connected: id=1
+Client disconnected: id=1
+Client connected: id=2
+[00:08:41.768] Starting pipeline: v4l2src name=src io-mode=2 do-timestamp=true device=/dev/video0 ! image/jpeg,width=1024,height=576,framerate=30/1 ! jpegdec ! videorate ! video/x-raw,framerate=30/1 ! videoconvert ! nvvidconv ! nvv4l2h264enc insert-sps-pps=true idrinterval=30 bitrate=884736 ! h264parse name=parse ! video/x-h264,stream-format=byte-stream,alignment=au ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1 ! webrtcbin name=webrtcbin bundle-policy=max-bundle
+0:00:19.269115205 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:497:gst_webrtc_bin_pad_new:<'':sink_0>[00m new visible pad with direction sink
+0:00:19.269360936 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+0:00:19.413694120 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:19.415088269 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => PLAYING
+Opening in BLOCKING MODE 
+[00:08:41.987] Pipeline state change: SUCCESS
+Camera enabled: client=2 camera=camera_0 viewers=1
+[00:08:42.138] Creating offer on main loop
+0:00:19.565912544 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4255:_create_sdp_task:<webrtcbin>[00m creating offer sdp with options (NULL)
+0:00:19.566011854 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3002:sdp_media_from_transceiver:<webrtctransceiver0>[00m 0 Generating new ice parameters mline -1, mid (null)
+0:00:19.566231405 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3083:sdp_media_from_transceiver:<webrtcbin>[00m Adding 0-th caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true to 0-th media
+0:00:19.566314200 [31m 8352[00m 0xffffa800b4c0 [33;01mWARN   [00m [00m           webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin>[00m Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+[00:08:42.142] Starting pipeline: v4l2src name=src io-mode=2 do-timestamp=true device=/dev/video6 ! video/x-raw,format=YUY2,width=1344,height=376,framerate=15/1 ! videorate ! video/x-raw,framerate=15/1 ! videocrop right=672 ! video/x-raw,width=672,height=376 ! videoconvert ! nvvidconv ! nvv4l2h264enc insert-sps-pps=true idrinterval=30 bitrate=189504 ! h264parse name=parse ! video/x-h264,stream-format=byte-stream,alignment=au ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1 ! webrtcbin name=webrtcbin bundle-policy=max-bundle
+0:00:19.608052381 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:497:gst_webrtc_bin_pad_new:<'':sink_0>[00m new visible pad with direction sink
+0:00:19.608213652 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+Failed to open /dev/video3: No such file or directory
+0:00:19.792516984 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:19.793660058 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => PLAYING
+Opening in BLOCKING MODE 
+Opening in BLOCKING MODE 
+[00:08:42.366] Pipeline state change: SUCCESS
+NvMMLiteOpen : Block : BlockType = 4 
+===== NvVideo: NVENC =====
+NvMMLiteBlockCreate : Block : BlockType = 4 
+[00:08:42.507] Offer created
+Routing offer: client=2 camera=camera_0
+0:00:19.935506740 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set local offer in the stable state
+0:00:19.935558651 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:19.935629253 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:779:gst_webrtc_ice_set_local_credentials:<webrtcbin0:ice>[00m Setting local ICE credentials on ICE stream 1 ufrag:KX8dLX3HaVZzLE38sTrnC2fnLX5AK8Hk pwd:+tJLDToNmFP9wp39ysIb7x9AS4SZeNR+
+0:00:19.935646024 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:797:gst_webrtc_ice_gather_candidates:<webrtcbin0:ice>[00m gather candidates for stream 1
+0:00:19.937522641 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from new(0) to gathering(1)
+Routing ICE: client=2 camera=camera_0
+Routing ICE: client=2 camera=camera_0
+Routing ICE: client=2 camera=camera_0
+[Camera enabled: client=2 camera=camera_10 viewers=1
+00:08:42.516] Creating offer on main loop
+0:00:19.944257255 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4255:_create_sdp_task:<webrtcbin>[00m creating offer sdp with options (NULL)
+0:00:19.944309775 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3002:sdp_media_from_transceiver:<webrtctransceiver1>[00m 0 Generating new ice parameters mline -1, mid (null)
+0:00:19.944468101 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3083:sdp_media_from_transceiver:<webrtcbin>[00m Adding 0-th caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true to 0-th media
+0:00:19.944507467 [31m 8352[00m 0xffffa80086a0 [33;01mWARN   [00m [00m           webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin>[00m Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+[00:08:42.520] Offer created
+Routing offer: client=2 camera=camera_10
+0:00:19.947929454 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set local offer in the stable state
+0:00:19.947979477 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:19.948042398 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:779:gst_webrtc_ice_set_local_credentials:<webrtcbin1:ice>[00m Setting local ICE credentials on ICE stream 1 ufrag:MNMNzgrCPj+d0z4G2cKOmTIfoxLH+3qV pwd:8633zmfxUl4motpIBFN+X2GkLhwbTlyX
+0:00:19.948057824 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:797:gst_webrtc_ice_gather_candidates:<webrtcbin1:ice>[00m gather candidates for stream 1
+[00:08:42.520] Starting pipeline: v4l2src name=src io-mode=2 do-timestamp=true device=/dev/video4 ! image/jpeg,width=640,height=360,framerate=30/1 ! jpegdec ! videorate ! video/x-raw,framerate=30/1 ! videoconvert ! nvvidconv ! nvv4l2h264enc insert-sps-pps=true idrinterval=30 bitrate=345600 ! h264parse name=parse ! video/x-h264,stream-format=byte-stream,alignment=au ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1 ! webrtcbin name=webrtcbin bundle-policy=max-bundle
+0:00:19.949463334 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from new(0) to gathering(1)
+Routing ICE: client=2 camera=camera_10
+Routing ICE: client=2 camera=camera_10
+Routing ICE: client=2 camera=camera_10
+0:00:19.951493349 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:497:gst_webrtc_bin_pad_new:<'':sink_0>[00m new visible pad with direction sink
+0:00:19.951623543 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+Failed to open /dev/video3: No such file or directory
+0:00:19.986105148 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:19.986937681 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => PLAYING
+Opening in BLOCKING MODE 
+Opening in BLOCKING MODE 
+[00:08:42.559] Pipeline state change: SUCCESS
+Camera enabled: client=[2 camera=camera_4 viewers=1
+00:08:42.709] Creating offer on main loop
+0:00:20.137508347 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4255:_create_sdp_task:<webrtcbin>[00m creating offer sdp with options (NULL)
+0:00:20.137580965 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3002:sdp_media_from_transceiver:<webrtctransceiver2>[00m 0 Generating new ice parameters mline -1, mid (null)
+0:00:20.137803877 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3083:sdp_media_from_transceiver:<webrtcbin>[00m Adding 0-th caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true to 0-th media
+0:00:20.137827144 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from gathering(1) to complete(2)
+0:00:20.137858925 [31m 8352[00m 0xffffa81c1060 [33;01mWARN   [00m [00m           webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin>[00m Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+[00:08:42.714] Offer created
+[00:08:42.714] Starting pipeline: v4l2src name=src io-mode=2 do-timestamp=true device=/dev/video2 ! image/jpeg,width=640,height=360,framerate=30/1 ! jpegdec ! videorate ! video/x-raw,framerate=30/1 ! videoconvert ! nvvidconv ! nvv4l2h264enc insert-sps-pps=true idrinterval=30 bitrate=345600 ! h264parse name=parse ! video/x-h264,stream-format=byte-stream,alignment=au ! rtph264pay name=pay0 config-interval=1 aggregate-mode=zero-latency ! application/x-rtp,media=video,encoding-name=H264,payload=96,packetization-mode=(string)1 ! webrtcbin name=webrtcbin bundle-policy=max-bundle
+Routing offer: client=2 camera=camera_4
+0:00:20.142402222 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set local offer in the stable state
+0:00:20.142453781 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:20.142529888 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:779:gst_webrtc_ice_set_local_credentials:<webrtcbin2:ice>[00m Setting local ICE credentials on ICE stream 1 ufrag:wJiEIu+F5lgeU+zbdiefUkArNn34WPGX pwd:DbN5e+UabYFtgFZS7WrzIAWZrk7d5I6N
+0:00:20.142547651 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:797:gst_webrtc_ice_gather_candidates:<webrtcbin2:ice>[00m gather candidates for stream 1
+0:00:20.144087484 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from new(0) to gathering(1)
+Routing ICE: client=2 camera=camera_4
+Routing ICE: client=2 camera=camera_4
+Routing ICE: client=2 camera=camera_4
+0:00:20.145831986 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:497:gst_webrtc_bin_pad_new:<'':sink_0>[00m new visible pad with direction sink
+0:00:20.145966565 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+0:00:20.149692435 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from gathering(1) to complete(2)
+0:00:20.182611099 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:20.183498616 [31m 8352[00m 0xffffa8125590 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => PLAYING
+Opening in BLOCKING MODE 
+Opening in BLOCKING MODE 
+[00:08:42.756] Pipeline state change: SUCCESS
+NvMMLiteOpen : Block : BlockType = 4 
+===== NvVideo: NVENC =====
+NvMMLiteBlockCreate : Block : BlockType = 4 
+H264: extProfile = 2 Level = 0 
+NVMEDIA: Need to set EMC bandwidth : 63000 
+NvVideo: bBlitMode is set to TRUE 
+0:00:20.259876535 [31m 8352[00m 0xffffa8290d20 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, payload=(int)96, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, ssrc=(uint)319413552, timestamp-offset=(uint)3732467250, seqnum-offset=(uint)13283, a-framerate=(string)15
+0:00:20.260131675 [31m 8352[00m 0xffffa8290d20 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, sprop-parameter-sets=(string)"Z0JAFpZUBUGPyoA\=\,aM48gA\=\=", payload=(int)96, seqnum-offset=(uint)13283, timestamp-offset=(uint)3732467250, ssrc=(uint)319413552, a-framerate=(string)15
+H264: extProfile = 2 Level = 0 
+NVMEDIA: Need to set EMC bandwidth : 376000 
+NvVideo: bBlitMode is set to TRUE 
+0:00:20.266430261 [31m 8352[00m 0xffff940c6400 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, payload=(int)96, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, ssrc=(uint)4239023650, timestamp-offset=(uint)2202789261, seqnum-offset=(uint)1040, a-framerate=(string)30
+0:00:20.266619119 [31m 8352[00m 0xffff940c6400 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, sprop-parameter-sets=(string)"Z0JAH5ZUAgAkyA\=\=\,aM48gA\=\=", payload=(int)96, seqnum-offset=(uint)1040, timestamp-offset=(uint)2202789261, ssrc=(uint)4239023650, a-framerate=(string)30
+Camera enabled: client=[2 camera=camera_1 viewers=1
+00:08:42.906] Creating offer on main loop
+0:00:20.334204789 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4255:_create_sdp_task:<webrtcbin>[00m creating offer sdp with options (NULL)
+0:00:20.334276383 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3002:sdp_media_from_transceiver:<webrtctransceiver3>[00m 0 Generating new ice parameters mline -1, mid (null)
+0:00:20.334424628 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:3083:sdp_media_from_transceiver:<webrtcbin>[00m Adding 0-th caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true to 0-th media
+0:00:20.334473467 [31m 8352[00m 0xffffa81c1120 [33;01mWARN   [00m [00m           webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin>[00m Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+[00:08:42.911] Offer created
+Routing offer: client=2 camera=camera_1
+0:00:20.339213016 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set local offer in the stable state
+0:00:20.339266400 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:20.339338922 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:779:gst_webrtc_ice_set_local_credentials:<webrtcbin3:ice>[00m Setting local ICE credentials on ICE stream 1 ufrag:ct9PMdVGsI6LV6RyYUnheTSA1ntSQ/yY pwd:Ui9awB0GWlqE0pbS3jlVlbLzXcz/j58k
+0:00:20.339383120 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:797:gst_webrtc_ice_gather_candidates:<webrtcbin3:ice>[00m gather candidates for stream 1
+0:00:20.340833117 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from new(0) to gathering(1)
+Routing ICE: client=2 camera=camera_1
+Routing ICE: client=2 camera=camera_1
+Routing ICE: client=2 camera=camera_1
+0:00:20.344307144 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from gathering(1) to complete(2)
+Routing answer: client=2 camera=camera_0
+0:00:20.398935848 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set remote answer in the have-local-offer state
+0:00:20.399011891 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:20.399124579 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4784:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp session level attributes to caps
+0:00:20.399158920 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4786:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp media level attributes to caps
+0:00:20.399191116 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4799:_update_transport_ptmap_from_media:<webrtcbin>[00m  looking at 0 pt: 96
+0:00:20.400187161 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4963:_update_transceiver_from_sdp_media:<webrtcbin>[00m transceiver <webrtctransceiver0> direction change from none to sendonly
+0:00:20.400217117 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4996:_update_transceiver_from_sdp_media:<webrtcbin>[00m found existing send pad <webrtcbin:sink_0> for transceiver <webrtctransceiver0>
+0:00:20.400285479 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4522:_connect_input_stream:<webrtcbin:sink_0>[00m linking input stream 0
+0:00:20.400604820 [31m 8352[00m 0xffffa800b4c0 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:720:gst_webrtc_ice_set_remote_credentials:<webrtcbin0:ice>[00m Setting remote ICE credentials on ICE stream 1 ufrag:Zen9 pwd:Pw56k6nAFfb9l9ZSlq3IxyzP
+Routing answer: client=2 camera=camera_10
+0:00:20.400809137 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set remote answer in the have-local-offer state
+0:00:20.400861624 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+Routing answer: client=2 camera=camera_4
+0:00:20.400948836 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4784:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp session level attributes to caps
+0:00:20.400969575 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4786:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp media level attributes to caps
+0:00:20.400997963 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4799:_update_transport_ptmap_from_media:<webrtcbin>[00m  looking at 0 pt: 96
+0:00:20.401061140 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set remote answer in the have-local-offer state
+0:00:20.401106907 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:20.401216138 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4784:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp session level attributes to caps
+0:00:20.401234733 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4786:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp media level attributes to caps
+0:00:20.401262385 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4799:_update_transport_ptmap_from_media:<webrtcbin>[00m  looking at 0 pt: 96
+Routing answer: client=2 camera=camera_1
+0:00:20.401785307 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4963:_update_transceiver_from_sdp_media:<webrtcbin>[00m transceiver <webrtctransceiver1> direction change from none to sendonly
+0:00:20.401814399 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4996:_update_transceiver_from_sdp_media:<webrtcbin>[00m found existing send pad <webrtcbin:sink_0> for transceiver <webrtctransceiver1>
+0:00:20.401874215 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4522:_connect_input_stream:<webrtcbin:sink_0>[00m linking input stream 0
+0:00:20.401937168 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4963:_update_transceiver_from_sdp_media:<webrtcbin>[00m transceiver <webrtctransceiver2> direction change from none to sendonly
+0:00:20.401964788 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4996:_update_transceiver_from_sdp_media:<webrtcbin>[00m found existing send pad <webrtcbin:sink_0> for transceiver <webrtctransceiver2>
+0:00:20.402055777 [31m 8352[00m 0xffffa81c1060 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:720:gst_webrtc_ice_set_remote_credentials:<webrtcbin2:ice>[00m Setting remote ICE credentials on ICE stream 1 ufrag:V/nQ pwd:tFebSPWK4f9S3aF9f185NtVz
+0:00:20.402129419 [31m 8352[00m 0xffff90124300 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:6829:on_rtpbin_new_sender_ssrc:<webrtcbin>[00m session 0 ssrc 4239023650 new sender ssrc
+0:00:20.402140525 [31m 8352[00m 0xffffa80086a0 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:720:gst_webrtc_ice_set_remote_credentials:<webrtcbin1:ice>[00m Setting remote ICE credentials on ICE stream 1 ufrag:zy+t pwd:pizGxWytaP4/VXQXzI1V2mbr
+0:00:20.402378926 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:5542:_set_description_task:<webrtcbin>[00m Attempting to set remote answer in the have-local-offer state
+0:00:20.402422292 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:5725:_set_description_task:<webrtcbin>[00m we are in ice controlling mode: true
+0:00:20.402495967 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4784:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp session level attributes to caps
+0:00:20.402514850 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4786:_update_transport_ptmap_from_media:<webrtcbin>[00m mapping sdp media level attributes to caps
+0:00:20.402539685 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4799:_update_transport_ptmap_from_media:<webrtcbin>[00m  looking at 0 pt: 96
+0:00:20.402890199 [31m 8352[00m 0xffff8c043640 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:6829:on_rtpbin_new_sender_ssrc:<webrtcbin>[00m session 0 ssrc 319413552 new sender ssrc
+0:00:20.403893188 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin>[00m ICE connection state change from new(0) to checking(1)
+0:00:20.404242645 [31m 8352[00m 0xffffa800b4c0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin>[00m Peer connection state change from new(0) to connecting(1)
+0:00:20.404720857 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4963:_update_transceiver_from_sdp_media:<webrtcbin>[00m transceiver <webrtctransceiver3> direction change from none to sendonly
+0:00:20.404740156 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin>[00m ICE connection state change from new(0) to checking(1)
+0:00:20.404789763 [31m 8352[00m 0xffffa80086a0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin>[00m Peer connection state change from new(0) to connecting(1)
+0:00:20.404753054 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:4996:_update_transceiver_from_sdp_media:<webrtcbin>[00m found existing send pad <webrtcbin:sink_0> for transceiver <webrtctransceiver3>
+0:00:20.404920437 [31m 8352[00m 0xffffa81c1120 [37mDEBUG  [00m [00m           webrtcice gstwebrtcice.c:720:gst_webrtc_ice_set_remote_credentials:<webrtcbin3:ice>[00m Setting remote ICE credentials on ICE stream 1 ufrag:cCxV pwd:qV1q/ma9/4ey+LIPojKZcIPT
+0:00:20.405076587 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin>[00m ICE connection state change from new(0) to checking(1)
+0:00:20.405113136 [31m 8352[00m 0xffffa81c1060 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin>[00m Peer connection state change from new(0) to connecting(1)
+0:00:20.405614423 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin>[00m ICE connection state change from new(0) to checking(1)
+0:00:20.405646236 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin>[00m Peer connection state change from new(0) to connecting(1)
+0:00:20.541141432 [31m 8352[00m 0xffffa81c1120 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin>[00m ICE gathering state change from gathering(1) to complete(2)
+NvMMLiteOpen : Block : BlockType = 4 
+===== NvVideo: NVENC =====
+NvMMLiteBlockCreate : Block : BlockType = 4 
+0:00:20.791669472 [31m 8352[00m 0xaaaabe1b2240 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6504:on_rtpbin_request_pt_map:<webrtcbin>[00m getting pt map for pt 96 in session 0
+0:00:20.796064267 [31m 8352[00m 0xffff8c001b00 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6504:on_rtpbin_request_pt_map:<webrtcbin>[00m getting pt map for pt 96 in session 0
+H264: extProfile = 2 Level = 0 
+NVMEDIA: Need to set EMC bandwidth : 126000 
+NvVideo: bBlitMode is set to TRUE 
+0:00:20.844268660 [31m 8352[00m 0xffff68001700 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, payload=(int)96, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, ssrc=(uint)200471629, timestamp-offset=(uint)266772646, seqnum-offset=(uint)12497, a-framerate=(string)30
+0:00:20.844325852 [31m 8352[00m 0xffff68001700 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4522:_connect_input_stream:<webrtcbin:sink_0>[00m linking input stream 0
+0:00:20.845342667 [31m 8352[00m 0xffff68001700 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, sprop-parameter-sets=(string)"Z0JAHpZUBQF/yoA\=\,aM48gA\=\=", payload=(int)96, seqnum-offset=(uint)12497, timestamp-offset=(uint)266772646, ssrc=(uint)200471629, a-framerate=(string)30
+0:00:20.845894713 [31m 8352[00m 0xffff4c0429e0 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:6829:on_rtpbin_new_sender_ssrc:<webrtcbin>[00m session 0 ssrc 200471629 new sender ssrc
+NvMMLiteOpen : Block : BlockType = 4 
+===== NvVideo: NVENC =====
+NvMMLiteBlockCreate : Block : BlockType = 4 
+0:00:21.138941928 [31m 8352[00m 0xffff4c001b60 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6504:on_rtpbin_request_pt_map:<webrtcbin>[00m getting pt map for pt 96 in session 0
+H264: extProfile = 2 Level = 0 
+NVMEDIA: Need to set EMC bandwidth : 126000 
+NvVideo: bBlitMode is set to TRUE 
+0:00:21.171905549 [31m 8352[00m 0xffff48001e40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, payload=(int)96, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, ssrc=(uint)4188797888, timestamp-offset=(uint)887934595, seqnum-offset=(uint)27337, a-framerate=(string)30
+0:00:21.171960885 [31m 8352[00m 0xffff48001e40 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:4522:_connect_input_stream:<webrtcbin:sink_0>[00m linking input stream 0
+0:00:21.172723136 [31m 8352[00m 0xffff48001e40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:309:gst_webrtcbin_sink_event:<webrtcbin>[00m On <webrtcbin:sink_0> checking negotiation? 1, caps application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, packetization-mode=(string)1, sprop-parameter-sets=(string)"Z0JAHpZUBQF/yoA\=\,aM48gA\=\=", payload=(int)96, seqnum-offset=(uint)27337, timestamp-offset=(uint)887934595, ssrc=(uint)4188797888, a-framerate=(string)30
+0:00:21.173227175 [31m 8352[00m 0xffff2c03d860 [36mINFO   [00m [00m           webrtcbin gstwebrtcbin.c:6829:on_rtpbin_new_sender_ssrc:<webrtcbin>[00m session 0 ssrc 4188797888 new sender ssrc
+0:00:21.364833824 [31m 8352[00m 0xffff2c001b00 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6504:on_rtpbin_request_pt_map:<webrtcbin>[00m getting pt map for pt 96 in session 0
+Client disconnected: id=2
+Removing pipeline for disconnected client=2 camera=camera_0
+0:00:31.989072309 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PLAYING => PAUSED
+0:00:31.989388929 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:31.990237238 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+[00:08:54.563] Stopping pipeline
+0:00:31.990701270 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+0:00:31.991193626 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:31.991637591 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.116338166 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+0:00:32.154484808 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:7197:gst_webrtc_bin_release_pad:<webrtcbin>[00m Releasing <webrtcbin:sink_0>
+Removing pipeline for disconnected client=2 camera=camera_1
+0:00:32.157471204 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PLAYING => PAUSED
+0:00:32.157863674 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.158967699 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+[00:08:54.731] Stopping pipeline
+0:00:32.159622317 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+0:00:32.160251556 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:32.160836533 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.280469400 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+0:00:32.285887908 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:7197:gst_webrtc_bin_release_pad:<webrtcbin>[00m Releasing <webrtcbin:sink_0>
+Removing pipeline for disconnected client=2 camera=camera_10
+0:00:32.288315827 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PLAYING => PAUSED
+0:00:32.288658498 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.289479892 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+[00:08:54.862] Stopping pipeline
+0:00:32.289997947 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+0:00:32.290484959 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:32.290965089 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.314137952 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+0:00:32.320191107 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:7197:gst_webrtc_bin_release_pad:<webrtcbin>[00m Releasing <webrtcbin:sink_0>
+Removing pipeline for disconnected client=2 camera=camera_4
+0:00:32.321884557 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PLAYING => PAUSED
+0:00:32.322094954 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.322813966 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+[00:08:54.895] Stopping pipeline
+0:00:32.323448709 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: NULL => READY
+0:00:32.324149414 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => PAUSED
+0:00:32.324727126 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: PAUSED => READY
+0:00:32.513280590 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:6960:gst_webrtc_bin_change_state:[00m changing state: READY => NULL
+0:00:32.519687009 [31m 8352[00m 0xaaaabe0a4a40 [37mDEBUG  [00m [00m           webrtcbin gstwebrtcbin.c:7197:gst_webrtc_bin_release_pad:<webrtcbin>[00m Releasing <webrtcbin:sink_0>

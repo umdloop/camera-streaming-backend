@@ -1,0 +1,1 @@
+tcp   LISTEN    0      4096                        *:8081                       *:*     users:(("camera-stream",pid=6527,fd=12))                                             

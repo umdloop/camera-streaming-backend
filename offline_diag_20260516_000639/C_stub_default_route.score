@@ -1,0 +1,5 @@
+scenario=C_stub_default_route
+ice_connected_transitions=0
+ice_failed_transitions=0
+udp_out_to_gui=20
+udp_in_from_gui=9939

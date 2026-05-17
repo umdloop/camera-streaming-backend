@@ -1,0 +1,182 @@
+############ OFFLINE DIAGNOSIS REPORT ############
+Generated: Sat May 16 12:08:55 AM EDT 2026
+GUI IP: 192.168.88.10    LAN iface: enP8p1s0    LAN gw: 192.168.88.1
+
+============ SYSTEM STATE (baseline offline) ============
+=== date ===
+Sat May 16 12:06:39 AM EDT 2026
+
+=== ip -4 addr ===
+1: lo    inet 127.0.0.1/8 scope host lo\       valid_lft forever preferred_lft forever
+3: enP8p1s0    inet 192.168.88.90/24 scope global enP8p1s0\       valid_lft forever preferred_lft forever
+9: docker0    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0\       valid_lft forever preferred_lft forever
+
+=== ip route ===
+169.254.0.0/16 dev enP8p1s0 scope link metric 1000 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+192.168.88.0/24 dev enP8p1s0 proto kernel scope link src 192.168.88.90 
+
+=== ip route get 192.168.88.10 ===
+192.168.88.10 dev enP8p1s0 src 192.168.88.90 uid 0 
+    cache 
+
+=== docker0 link ===
+9: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default 
+    link/ether 06:43:1b:fd:b7:34 brd ff:ff:ff:ff:ff:ff
+
+=== nvpmodel -q ===
+NV Power Mode: 15W
+2
+
+=== jetson_clocks --show ===
+SOC family:tegra234  Machine:NVIDIA Jetson Orin NX Engineering Reference Developer Kit
+Online CPUs: 0-3
+cpu0:  Online=1 Governor=schedutil MinFreq=729600 MaxFreq=1420800 CurrentFreq=1420800 IdleStates: WFI=1 c7=1 
+cpu1:  Online=1 Governor=schedutil MinFreq=729600 MaxFreq=1420800 CurrentFreq=1036800 IdleStates: WFI=1 c7=1 
+cpu2:  Online=1 Governor=schedutil MinFreq=729600 MaxFreq=1420800 CurrentFreq=1420800 IdleStates: WFI=1 c7=1 
+cpu3:  Online=1 Governor=schedutil MinFreq=729600 MaxFreq=1420800 CurrentFreq=1344000 IdleStates: WFI=1 c7=1 
+cpu4:  Online=0 Governor=schedutil MinFreq=729600 MaxFreq=1984000 CurrentFreq=729600 IdleStates: WFI=1 c7=1 
+cpu5:  Online=0 Governor=schedutil MinFreq=729600 MaxFreq=1984000 CurrentFreq=729600 IdleStates: WFI=1 c7=1 
+cpu6:  Online=0 Governor=schedutil MinFreq=729600 MaxFreq=1984000 CurrentFreq=729600 IdleStates: WFI=1 c7=1 
+cpu7:  Online=0 Governor=schedutil MinFreq=729600 MaxFreq=1984000 CurrentFreq=729600 IdleStates: WFI=1 c7=1 
+GPU MinFreq=306000000 MaxFreq=612000000 CurrentFreq=306000000
+Active GPU TPCs: 2
+EMC MinFreq=204000000 MaxFreq=3199000000 CurrentFreq=2133000000 FreqOverride=0
+DLA0_CORE:   Online=1 MinFreq=0 MaxFreq=614400000 CurrentFreq=614400000
+DLA0_FALCON: Online=1 MinFreq=0 MaxFreq=294400000 CurrentFreq=294400000
+DLA1_CORE:   Online=1 MinFreq=0 MaxFreq=115200000 CurrentFreq=115200000
+DLA1_FALCON: Online=1 MinFreq=0 MaxFreq=115200000 CurrentFreq=115200000
+PVA0_VPS0: Online=1 MinFreq=0 MaxFreq=115200000 CurrentFreq=115200000
+PVA0_AXI:  Online=1 MinFreq=0 MaxFreq=115200000 CurrentFreq=115200000
+FAN Dynamic Speed Control=nvfancontrol hwmon0_pwm1=77
+NV Power Mode: 15W
+
+============ SCENARIO RESULTS ============
+--- A_baseline ---
+scenario=A_baseline
+ice_connected_transitions=0
+ice_failed_transitions=0
+udp_out_to_gui=52
+udp_in_from_gui=11024
+
+--- B_docker0_down ---
+scenario=B_docker0_down
+ice_connected_transitions=0
+ice_failed_transitions=0
+udp_out_to_gui=52
+udp_in_from_gui=9589
+
+--- C_stub_default_route ---
+scenario=C_stub_default_route
+ice_connected_transitions=0
+ice_failed_transitions=0
+udp_out_to_gui=20
+udp_in_from_gui=9939
+
+--- D_both ---
+scenario=D_both
+ice_connected_transitions=0
+ice_failed_transitions=0
+udp_out_to_gui=32
+udp_in_from_gui=9075
+
+============ KEY: which scenarios reached ICE connected? ============
+  FAIL  A_baseline
+  FAIL  B_docker0_down
+  FAIL  C_stub_default_route
+  FAIL  D_both
+
+============ INTERESTING LOG LINES PER SCENARIO ============
+--- A_baseline ---
+0:00:06.969009000  7989 0xffffa0009cc0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:06.971414393  7989 0xffffa0006aa0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:07.159517813  7989 0xffffa01bf060 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:07.169377088  7989 0xffffa0009cc0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:07.171642135  7989 0xffffa0006aa0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:07.350089223  7989 0xffffa01bf120 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:07.359667456  7989 0xffffa01bf060 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:07.435499699  7989 0xffffa0009cc0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:07.435536890  7989 0xffffa0009cc0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:07.435999597  7989 0xffffa0006aa0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:07.436051734  7989 0xffffa0006aa0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:07.436523755  7989 0xffffa01bf120 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:07.436548175  7989 0xffffa01bf120 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:07.437391591  7989 0xffffa01bf060 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:07.437422124  7989 0xffffa01bf060 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:07.550454168  7989 0xffffa01bf120 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+
+(Argus) Error EndOfFile: Receive worker failure, notifying 1 waiting threads (in src/rpc/socket/client/ClientSocketManager.cpp, function recvThreadCore(), line 350)
+0:00:06.512263866  7989 0xffffa0009cc0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:06.918222801  7989 0xffffa0006aa0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:07.152130983  7989 0xffffa01bf060 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:07.344303352  7989 0xffffa01bf120 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+
+--- B_docker0_down ---
+0:00:06.530288565  8131 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:06.531447671  8131 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:06.532755121  8131 0xffffa01c5520 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:06.535383271  8131 0xffffa01c5460 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:06.583974025  8131 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:06.584016432  8131 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:06.584017328  8131 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:06.584074714  8131 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:06.588793132  8131 0xffffa01c5520 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:06.588822513  8131 0xffffa01c5520 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:06.588876666  8131 0xffffa01c5460 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:06.588899262  8131 0xffffa01c5460 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:06.730549174  8131 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:06.731710264  8131 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:06.733098431  8131 0xffffa01c5520 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:06.735256103  8131 0xffffa01c5460 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+
+0:00:05.569730981  8131 0xffffa000b4c0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:05.974605617  8131 0xffffa00086a0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:06.166011277  8131 0xffffa01c5460 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:06.357463089  8131 0xffffa01c5520 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+
+--- C_stub_default_route ---
+0:00:27.096137097  8252 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:27.110741702  8252 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:27.296546530  8252 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:27.303901158  8252 0xffffa01c3060 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:27.311002820  8252 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:27.499919483  8252 0xffffa01c3120 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:27.504158576  8252 0xffffa01c3060 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:27.562319245  8252 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:27.562352082  8252 0xffffa000b4c0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:27.563150248  8252 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:27.563189870  8252 0xffffa00086a0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:27.563839055  8252 0xffffa01c3060 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:27.563875092  8252 0xffffa01c3060 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:27.566782660  8252 0xffffa01c3120 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:27.566825418  8252 0xffffa01c3120 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:27.700218443  8252 0xffffa01c3120 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+
+0:00:26.727186198  8252 0xffffa000b4c0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:27.104930981  8252 0xffffa00086a0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:27.297254411  8252 0xffffa01c3060 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:27.490915650  8252 0xffffa01c3120 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+
+--- D_both ---
+0:00:19.937522641  8352 0xffffa800b4c0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:19.949463334  8352 0xffffa80086a0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:20.137827144  8352 0xffffa800b4c0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:20.144087484  8352 0xffffa81c1060 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:20.149692435  8352 0xffffa80086a0 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:20.340833117  8352 0xffffa81c1120 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from new(0) to gathering(1)
+0:00:20.344307144  8352 0xffffa81c1060 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+0:00:20.403893188  8352 0xffffa800b4c0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:20.404242645  8352 0xffffa800b4c0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:20.404740156  8352 0xffffa80086a0 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:20.404789763  8352 0xffffa80086a0 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:20.405076587  8352 0xffffa81c1060 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:20.405113136  8352 0xffffa81c1060 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:20.405614423  8352 0xffffa81c1120 INFO               webrtcbin gstwebrtcbin.c:1409:_update_ice_connection_state_task:<webrtcbin> ICE connection state change from new(0) to checking(1)
+0:00:20.405646236  8352 0xffffa81c1120 INFO               webrtcbin gstwebrtcbin.c:1446:_update_peer_connection_state_task:<webrtcbin> Peer connection state change from new(0) to connecting(1)
+0:00:20.541141432  8352 0xffffa81c1120 INFO               webrtcbin gstwebrtcbin.c:1373:_update_ice_gathering_state_task:<webrtcbin> ICE gathering state change from gathering(1) to complete(2)
+
+0:00:19.566314200  8352 0xffffa800b4c0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:19.944507467  8352 0xffffa80086a0 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:20.137858925  8352 0xffffa81c1060 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+0:00:20.334473467  8352 0xffffa81c1120 WARN               webrtcbin gstwebrtcbin.c:3112:sdp_media_from_transceiver:<webrtcbin> Caps application/x-rtp, media=(string)video, payload=(int)96, encoding-name=(string)H264, packetization-mode=(string)1, clock-rate=(int)90000, rtcp-fb-nack-pli=(boolean)true, rtcp-fb-transport-cc=(boolean)true are missing ssrc
+

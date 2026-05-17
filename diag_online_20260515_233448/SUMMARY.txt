@@ -1,0 +1,67 @@
+=== Capture summary (online) ===
+
+--- DNS queries (offline failures show here) ---
+
+--- Unique non-LAN destinations contacted ---
+0000 -> 0000
+0001 -> 
+0001 -> cc00
+0020 -> 0000
+0482 -> 0000
+3439 -> 3720
+6964 -> 312f
+6b72 -> 696b,
+B -> 
+In -> 127.0.0.1
+M -> ttl
+
+--- All TCP/UDP endpoints (top 20 by packet count) ---
+   9894 In -> 192.168.88.10
+   9426 B -> 
+   5768 0482 -> 0000
+   3394 0000 -> 0000
+   3098 Out -> 192.168.88.90
+    264 0020 -> 0000
+     55 Out -> 192.168.88
+     48 In -> 127.0.0.1
+     39 Out -> 10.183.10.201
+     29 In -> 192.168.88
+      2 Out -> 10.183.10
+      2 In -> 0.0.0
+      1 Out -> Request
+      1 M -> ttl
+      1 In -> Reply
+      1 B -> Request
+      1 B -> 192.168.88.2
+      1 6b72 -> 696b,
+      1 6964 -> 312f
+      1 3439 -> 3720
+
+--- Media-path packet counts to/from 192.168.88.10 ---
+  Jetson -> GUI: 2864
+  GUI -> Jetson: 9677
+  TCP signaling: 375
+
+--- ICMP unreachables (shows what couldn't be reached) ---
+23:34:49.513094 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3034, length 64
+23:34:49.513168 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3034, length 64
+23:34:50.537260 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3035, length 64
+23:34:50.537331 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3035, length 64
+23:34:51.561026 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3036, length 64
+23:34:51.561092 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3036, length 64
+23:34:51.646642 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP 192.168.88.90 udp port 8660 unreachable, length 428
+23:34:51.646662 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP 192.168.88.90 udp port 8662 unreachable, length 428
+23:34:51.651301 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP 192.168.88.90 udp port 8664 unreachable, length 428
+23:34:51.651316 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP 192.168.88.90 udp port 8666 unreachable, length 428
+23:34:51.651328 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP 192.168.88.90 udp port 8668 unreachable, length 428
+23:34:51.651339 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP 192.168.88.90 udp port 8670 unreachable, length 428
+23:34:52.584993 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3037, length 64
+23:34:52.585047 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3037, length 64
+23:34:53.608923 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3038, length 64
+23:34:53.608976 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3038, length 64
+23:34:54.632910 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3039, length 64
+23:34:54.632982 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3039, length 64
+23:34:55.656833 enP8p1s0 In  IP 192.168.88.10 > 192.168.88.90: ICMP echo request, id 2, seq 3040, length 64
+23:34:55.656892 enP8p1s0 Out IP 192.168.88.90 > 192.168.88.10: ICMP echo reply, id 2, seq 3040, length 64
+
+--- Backend connect() / sendto() to non-local addresses ---
