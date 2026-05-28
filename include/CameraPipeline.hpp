@@ -17,7 +17,7 @@ class CameraPipeline {
 public:
     using OnErrorCallback = std::function<void(const std::string& message)>;
 
-    CameraPipeline(const CameraConfig& config, const std::string& streamName);
+    CameraPipeline(const CameraConfig& config, const std::string& streamName, int sourceFps = 0);
     ~CameraPipeline();
 
     bool start();
@@ -33,6 +33,7 @@ public:
 private:
     CameraConfig config_;
     std::string  streamName_;
+    int          sourceFps_ = 0; // native rate to negotiate with the source; 0 = use config_.fps
     GstElement*  pipeline_   = nullptr;
     guint        busWatchId_ = 0;
 

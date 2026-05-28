@@ -683,10 +683,34 @@ void CameraManager::enableCamera(int clientId, const std::string& id) {
     const std::string key = pipelineKey(clientId, id);
     if (pipelines_.count(key)) disableCamera(clientId, id);
 
+    // Pick a native source fps >= the user's cap so the camera negotiates a
+    // supported rate; videorate inside the pipeline then drops down to cfg.fps.
+    int sourceFps = it->second.fps;
+    auto capIt = capabilities_.find(it->second.devicePath);
+    if (capIt != capabilities_.end()) {
+        for (const auto& mode : capIt->second) {
+            if (mode.format == it->second.format &&
+                mode.width  == it->second.width  &&
+                mode.height == it->second.height) {
+                if (!mode.fpsValues.empty()) {
+                    int best = mode.fpsValues.back();
+                    for (auto rit = mode.fpsValues.rbegin(); rit != mode.fpsValues.rend(); ++rit) {
+                        if (*rit >= it->second.fps) best = *rit;
+                        else break;
+                    }
+                    sourceFps = best;
+                } else if (mode.maxFps > 0) {
+                    sourceFps = mode.maxFps;
+                }
+                break;
+            }
+        }
+    }
+
     std::string lastError;
     constexpr int kMaxAttempts = 3;
     for (int attempt = 1; attempt <= kMaxAttempts; ++attempt) {
-        auto pipeline = std::make_unique<CameraPipeline>(it->second, id);
+        auto pipeline = std::make_unique<CameraPipeline>(it->second, id, sourceFps);
 
         pipeline->setOnErrorCallback([clientId, id](const std::string& message) {
             std::cerr << "Pipeline error for client=" << clientId
@@ -785,16 +809,18 @@ bool CameraManager::applyConfigPatch(const std::string& id, const json& patch) {
     if (patch.contains("width"))    { cfg.width    = patch["width"];                     pipelineChange = true; }
     if (patch.contains("height"))   { cfg.height   = patch["height"];                    pipelineChange = true; }
     if (patch.contains("fps")) {
-        cfg.fps = patch["fps"];
+        int requested = patch["fps"];
+        int capped = std::max(1, requested);
         auto capIt = capabilities_.find(cfg.devicePath);
         if (capIt != capabilities_.end()) {
             for (const auto& mode : capIt->second) {
                 if (mode.format == cfg.format && mode.width == cfg.width && mode.height == cfg.height) {
-                    cfg.fps = chooseSupportedFps(cfg.fps, mode);
+                    if (mode.maxFps > 0) capped = std::min(capped, mode.maxFps);
                     break;
                 }
             }
         }
+        cfg.fps = capped;
         pipelineChange = true;
     }
     if (patch.contains("quality"))  { cfg.quality  = patch["quality"].get<std::string>(); pipelineChange = true; }

@@ -32,8 +32,12 @@ static bool isV4l2AllocationError(const std::string& message) {
 
 static std::string buildPipelineString(const CameraConfig& cfg,
                                        const PlatformSpecifics& specs,
-                                       const std::string& streamName) {
+                                       const std::string& streamName,
+                                       int sourceFps) {
     const bool isMjpg = (cfg.format == "MJPG");
+    // sourceFps is the rate negotiated with the camera (must match a native mode).
+    // cfg.fps is the user's software cap applied after videorate.
+    if (sourceFps <= 0) sourceFps = cfg.fps;
 
     std::string src;
 
@@ -47,13 +51,13 @@ static std::string buildPipelineString(const CameraConfig& cfg,
             src += " image/jpeg"
                    ",width="  + std::to_string(cfg.width) +
                    ",height=" + std::to_string(cfg.height) +
-                   ",framerate=" + std::to_string(cfg.fps) + "/1";
+                   ",framerate=" + std::to_string(sourceFps) + "/1";
         } else {
             src += " video/x-raw";
             if (!cfg.format.empty()) src += ",format=" + cfg.format;
             src += ",width="  + std::to_string(cfg.width) +
                    ",height=" + std::to_string(cfg.height) +
-                   ",framerate=" + std::to_string(cfg.fps) + "/1";
+                   ",framerate=" + std::to_string(sourceFps) + "/1";
         }
         if (isMjpg) src += " ! jpegdec";
         src += " ! videorate ! video/x-raw,framerate=" + std::to_string(cfg.fps) + "/1";
@@ -105,8 +109,8 @@ static std::string buildPipelineString(const CameraConfig& cfg,
 
 // ── CameraPipeline ────────────────────────────────────────────────────────────
 
-CameraPipeline::CameraPipeline(const CameraConfig& config, const std::string& streamName)
-    : config_(config), streamName_(streamName) {}
+CameraPipeline::CameraPipeline(const CameraConfig& config, const std::string& streamName, int sourceFps)
+    : config_(config), streamName_(streamName), sourceFps_(sourceFps) {}
 
 CameraPipeline::~CameraPipeline() {
     stop();
@@ -123,7 +127,7 @@ bool CameraPipeline::start() {
     auto specs = PlatformDetect::getPlatformSpecifics();
     if (config_.devicePath == "test") specs.source = "videotestsrc";
 
-    std::string pipelineStr = buildPipelineString(config_, specs, streamName_);
+    std::string pipelineStr = buildPipelineString(config_, specs, streamName_, sourceFps_);
     std::cout << "[" << timestamp() << "] Starting pipeline: " << pipelineStr << std::endl;
 
     GError* error = nullptr;
