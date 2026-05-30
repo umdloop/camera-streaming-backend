@@ -5,6 +5,7 @@
 #include <functional>
 #include <mutex>
 #include <string>
+#include <sys/types.h>
 
 #include "CameraConfig.hpp"
 
@@ -36,6 +37,7 @@ private:
     int          sourceFps_ = 0; // native rate to negotiate with the source; 0 = use config_.fps
     GstElement*  pipeline_   = nullptr;
     guint        busWatchId_ = 0;
+    pid_t        rosBridgePid_ = -1; // subprocess PID when useRosTopic is true
 
     std::atomic<int>       frameCount_{0};
     std::atomic<long long> byteCount_{0};

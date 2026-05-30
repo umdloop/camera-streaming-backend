@@ -378,9 +378,11 @@ void CameraManager::loadConfigs(const std::string& path) {
             cfg.height     = obj.value("height",   720);
             cfg.fps        = obj.value("fps",      30);
             cfg.quality    = obj.value("quality",  "medium");
-            cfg.exposure   = obj.value("exposure", -1);
+            cfg.exposure     = obj.value("exposure",     -1);
             cfg.cropLeftHalf = obj.value("cropLeftHalf", false);
-            configs_[id]   = cfg;
+            cfg.useRosTopic  = obj.value("useRosTopic",  false);
+            cfg.rosTopic     = obj.value("rosTopic",     "");
+            configs_[id]     = cfg;
         }
     } catch (const std::exception& e) {
         std::cerr << "loadConfigs: " << e.what() << std::endl;
@@ -402,6 +404,8 @@ void CameraManager::saveConfigs(const std::string& path) const {
             {"quality",    cfg.quality},
             {"exposure",   cfg.exposure},
             {"cropLeftHalf", cfg.cropLeftHalf},
+            {"useRosTopic",  cfg.useRosTopic},
+            {"rosTopic",     cfg.rosTopic},
         };
     }
     std::ofstream f(path);
@@ -681,7 +685,15 @@ void CameraManager::enableCamera(int clientId, const std::string& id) {
     }
 
     const std::string key = pipelineKey(clientId, id);
-    if (pipelines_.count(key)) disableCamera(clientId, id);
+    if (pipelines_.count(key)) {
+        // Pipeline already running for this client — no restart needed.
+        // (Failed pipelines are reaped by the background timer, leaving
+        //  pipelines_ empty for that key, so this branch is only hit when
+        //  the pipeline is genuinely still streaming.)
+        std::cout << "enableCamera: already streaming client=" << clientId
+                  << " camera=" << id << " (no-op)" << std::endl;
+        return;
+    }
 
     // Pick a native source fps >= the user's cap so the camera negotiates a
     // supported rate; videorate inside the pipeline then drops down to cfg.fps.
@@ -825,7 +837,9 @@ bool CameraManager::applyConfigPatch(const std::string& id, const json& patch) {
     }
     if (patch.contains("quality"))  { cfg.quality  = patch["quality"].get<std::string>(); pipelineChange = true; }
     if (patch.contains("exposure")) { cfg.exposure = patch["exposure"];                    pipelineChange = true; }
-    if (patch.contains("role"))       cfg.role     = patch["role"].get<std::string>();
+    if (patch.contains("role"))         cfg.role        = patch["role"].get<std::string>();
+    if (patch.contains("useRosTopic")) { cfg.useRosTopic = patch["useRosTopic"].get<bool>(); pipelineChange = true; }
+    if (patch.contains("rosTopic"))    { cfg.rosTopic    = patch["rosTopic"].get<std::string>(); pipelineChange = true; }
     if (pipelineChange && isEnabled(id)) {
         std::vector<int> enabledClients;
         for (const auto& [key, _] : pipelines_) {
@@ -873,6 +887,8 @@ std::string CameraManager::buildStateJson(int clientId) const {
             {"bitrate",      cfg.computeBitrate()},
             {"exposure",     cfg.exposure},
             {"cropLeftHalf",  cfg.cropLeftHalf},
+            {"useRosTopic",   cfg.useRosTopic},
+            {"rosTopic",      cfg.rosTopic},
             {"capabilities", caps},
         });
     }
