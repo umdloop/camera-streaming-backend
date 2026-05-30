@@ -14,6 +14,8 @@ struct CameraConfig {
     std::string quality  = "medium"; // "low" | "medium" | "high" | "ultra"
     int         exposure = -1;       // -1 = auto; >= 0 = absolute exposure value (v4l2 only)
     bool        cropLeftHalf = false; // true for side-by-side stereo devices where only left view is streamed
+    bool        useRosTopic = false;  // when true, read from rosTopic instead of devicePath
+    std::string rosTopic;             // e.g. "/cameras/cam0/image_raw"
 
     int computeBitrate() const {
         double bpp;

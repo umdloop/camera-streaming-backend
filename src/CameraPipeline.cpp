@@ -5,6 +5,11 @@
 #include <sstream>
 #include <sys/time.h>
 #include <thread>
+#ifdef __linux__
+#  include <csignal>
+#  include <unistd.h>
+#  include <sys/wait.h>
+#endif
 
 static std::string timestamp() {
     struct timeval tv;
@@ -29,6 +34,64 @@ static bool isV4l2AllocationError(const std::string& message) {
            message.find("gstv4l2src_decide_allocation") != std::string::npos;
 }
 
+
+// ── ROS bridge subprocess ─────────────────────────────────────────────────────
+
+static std::string findBridgeScript() {
+    // Binary lives in build/; script lives one level up in the repo root.
+    char selfPath[4096] = {};
+#ifdef __linux__
+    ssize_t len = readlink("/proc/self/exe", selfPath, sizeof(selfPath) - 1);
+    if (len > 0) {
+        std::string exe(selfPath, len);
+        // strip filename → build dir
+        auto s1 = exe.rfind('/');
+        if (s1 != std::string::npos) {
+            // strip build dir → repo root
+            std::string buildDir = exe.substr(0, s1);
+            auto s2 = buildDir.rfind('/');
+            if (s2 != std::string::npos) {
+                std::string candidate = buildDir.substr(0, s2 + 1) + "ros_camera_bridge.py";
+                if (access(candidate.c_str(), R_OK) == 0) return candidate;
+            }
+        }
+    }
+#endif
+    return "ros_camera_bridge.py"; // cwd fallback
+}
+
+static pid_t spawnRosBridge(const CameraConfig& cfg, const std::string& streamName) {
+#ifdef __linux__
+    std::string script    = findBridgeScript();
+    std::string bitrate   = std::to_string(cfg.computeBitrate());
+    std::string width     = std::to_string(cfg.width);
+    std::string height    = std::to_string(cfg.height);
+    std::string fps       = std::to_string(cfg.fps);
+
+    pid_t pid = fork();
+    if (pid == 0) {
+        const char* argv[] = {
+            "python3", script.c_str(),
+            "--topic",       cfg.rosTopic.c_str(),
+            "--stream-name", streamName.c_str(),
+            "--width",       width.c_str(),
+            "--height",      height.c_str(),
+            "--fps",         fps.c_str(),
+            "--bitrate",     bitrate.c_str(),
+            nullptr
+        };
+        execvp("python3", const_cast<char* const*>(argv));
+        _exit(127);
+    }
+    return pid;
+#else
+    (void)cfg; (void)streamName;
+    std::cerr << "ROS bridge subprocess not supported on this platform" << std::endl;
+    return -1;
+#endif
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 static std::string buildPipelineString(const CameraConfig& cfg,
                                        const PlatformSpecifics& specs,
@@ -117,13 +180,28 @@ CameraPipeline::~CameraPipeline() {
 }
 
 bool CameraPipeline::start() {
-    if (pipeline_) return true;
+    if (pipeline_ || rosBridgePid_ != -1) return true;
     failed_.store(false);
     {
         std::lock_guard<std::mutex> lock(errorMutex_);
         lastError_.clear();
     }
 
+    // ── ROS topic mode ────────────────────────────────────────────────────────
+    if (config_.useRosTopic && !config_.rosTopic.empty()) {
+        std::cout << "[" << timestamp() << "] Starting ROS bridge: "
+                  << config_.rosTopic << " -> rtsp://127.0.0.1:8554/" << streamName_ << std::endl;
+        rosBridgePid_ = spawnRosBridge(config_, streamName_);
+        if (rosBridgePid_ <= 0) {
+            std::cerr << "[" << timestamp() << "] Failed to spawn ros_camera_bridge.py" << std::endl;
+            failed_.store(true);
+            rosBridgePid_ = -1;
+            return false;
+        }
+        return true;
+    }
+
+    // ── Direct v4l2 / avfvideosrc mode ───────────────────────────────────────
     auto specs = PlatformDetect::getPlatformSpecifics();
     if (config_.devicePath == "test") specs.source = "videotestsrc";
 
@@ -206,6 +284,26 @@ bool CameraPipeline::start() {
 }
 
 void CameraPipeline::stop() {
+#ifdef __linux__
+    if (rosBridgePid_ > 0) {
+        std::cout << "[" << timestamp() << "] Stopping ROS bridge (pid=" << rosBridgePid_ << ")" << std::endl;
+        kill(rosBridgePid_, SIGTERM);
+        // Reap to avoid zombies; give it 1 s then SIGKILL.
+        for (int i = 0; i < 10; ++i) {
+            int status;
+            pid_t ret = waitpid(rosBridgePid_, &status, WNOHANG);
+            if (ret != 0) break;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        int status;
+        if (waitpid(rosBridgePid_, &status, WNOHANG) == 0) {
+            kill(rosBridgePid_, SIGKILL);
+            waitpid(rosBridgePid_, &status, 0);
+        }
+        rosBridgePid_ = -1;
+        return;
+    }
+#endif
     removeSourceIfActive(busWatchId_);
     if (pipeline_) {
         std::cout << "[" << timestamp() << "] Stopping pipeline" << std::endl;
